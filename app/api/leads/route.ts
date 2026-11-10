@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { db } from "@/lib/db";
 import { leadSchema, sanitizeParams } from "@/lib/validation/lead";
 import { hit, clientIp } from "@/lib/rateLimit";
@@ -82,7 +82,9 @@ export async function POST(req: Request) {
   });
 
   // Заявка уже сохранена; ошибка Telegram её не отменяет (повтор через cron/админку).
-  void notifyLead(lead.id).catch(() => {});
+  after(async () => {
+    await notifyLead(lead.id).catch(() => {});
+  });
 
   return NextResponse.json({ ok: true, number: lead.number });
 }

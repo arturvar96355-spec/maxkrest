@@ -1,0 +1,18 @@
+# Предпросмотр на Vercel (до передачи клиенту)
+
+Vercel — только для показа и тестов. Боевой сервер — VPS в РФ (`docs/DEPLOY.md`): на Vercel данные клиентов окажутся за рубежом (152-ФЗ).
+
+## Настройка
+1. Создайте PostgreSQL (например Neon или Supabase) и скопируйте **pooled**-строку подключения (с `?sslmode=require`). Регион БД — ближе к `fra1` (Франкфурт).
+2. В Vercel → Settings → Environment Variables добавьте:
+   `DATABASE_URL`, `AUTH_SECRET` (`openssl rand -hex 32`), `CRON_SECRET`, `SITE_URL` (адрес превью, https://…),
+   `ADMIN_EMAIL`, `ADMIN_PASSWORD` (≥10 символов; первый вход, потом пароль можно удалить из переменных),
+   по желанию `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+3. Сделайте Redeploy. Команда сборки (`vercel.json` → `npm run vercel-build`) сама применит миграции, наполнит контент и создаст администратора.
+4. Откройте `/admin/login`.
+
+## Отличия от VPS
+- Фото хранятся в БД (`STORAGE=db`, включается автоматически на Vercel), с VPS — на диске.
+- Лимит тела запроса на Vercel ~4,5 МБ: форма сжимает фото в браузере, общий размер ограничен 4 МБ.
+- Повтор недоставленных Telegram-уведомлений — Vercel Cron раз в сутки (тариф Hobby; чаще — на Pro, правится в `vercel.json`).
+- Если на Vercel нет `DATABASE_URL`, страницы показывают ошибку сервера.

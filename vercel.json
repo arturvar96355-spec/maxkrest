@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run vercel-build",
+  "regions": ["fra1"],
+  "crons": [{ "path": "/api/cron/retry-notify", "schedule": "0 6 * * *" }]
+}

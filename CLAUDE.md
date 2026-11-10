@@ -13,7 +13,7 @@ Docker Compose: app + postgres + caddy (HTTPS) + notify-retry.
 - `lib/serviceFields.ts` — ЕДИНЫЙ источник динамических полей формы (UI + валидация + админка).
 - `lib/validation/lead.ts` — zod-схема и `sanitizeParams`.
 - `lib/telegram.ts` — уведомления с backoff; заявка сохраняется ДО отправки, сбой Telegram её не теряет.
-- `lib/uploads.ts` — загрузки в `UPLOAD_DIR` (вне public), проверка magic bytes; отдача через `/api/files/*`
+- `lib/uploads.ts` — файлы: диск `UPLOAD_DIR` (VPS) или таблица `StoredFile` (Vercel, `STORAGE=db`); magic bytes; отдача через `/api/files/*`
   (`leads/*` только админу).
 - Контент (услуги, преимущества, этапы, настройки) — в БД, правится в админке.
 
@@ -26,4 +26,4 @@ Docker Compose: app + postgres + caddy (HTTPS) + notify-retry.
 ## Команды
 `npm run dev` · `npm run build` · `npm test` · `npm run test:e2e` · `npm run lint` · `npm run typecheck`
 `npx prisma migrate dev` · `npm run db:seed` · `npm run admin:create` (ADMIN_EMAIL/ADMIN_PASSWORD; в Docker — автоматически)
-Деплой: docs/DEPLOY.md; бэкап: scripts/backup.sh (docs/BACKUP.md).
+Деплой: docs/DEPLOY.md (VPS), docs/VERCEL.md (превью); бэкап: scripts/backup.sh (docs/BACKUP.md).

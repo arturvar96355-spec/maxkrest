@@ -13,7 +13,8 @@
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node prisma/seed.mjs",
     "admin:create": "node scripts/create-admin.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "vercel-build": "node scripts/vercel-build.mjs"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"
@@ -43,5 +44,8 @@
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

@@ -7,6 +7,26 @@ import { reachGoal } from "./goals";
 const STEPS = ["Услуга", "Объект", "Адрес и сроки", "Контакты"];
 type Params = Record<string, Record<string, string>>;
 
+const MAX_TOTAL = 4 * 1024 * 1024; // лимит тела запроса на Vercel ~4,5 МБ
+
+/** Уменьшает фото до 1600 px (JPEG) — быстрее загрузка с телефона. HEIC и неподдерживаемое оставляем как есть. */
+async function shrink(file: File): Promise<File> {
+  if (file.size < 600 * 1024 || !/^image\/(jpeg|png|webp)$/.test(file.type)) return file;
+  try {
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(bmp.width * k);
+    c.height = Math.round(bmp.height * k);
+    c.getContext("2d")!.drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise<Blob | null>((r) => c.toBlob(r, "image/jpeg", 0.8));
+    if (!blob || blob.size >= file.size) return file;
+    return new File([blob], file.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" });
+  } catch {
+    return file;
+  }
+}
+
 function formatPhoneInput(v: string) {
   let d = v.replace(/\D/g, "");
   if (d.startsWith("8")) d = "7" + d.slice(1);
@@ -54,11 +74,22 @@ export function LeadWizard({ initialService, callback }: { initialService?: Form
   const next = () => validate(step) && setStep((s) => Math.min(3, s + 1));
   const back = () => setStep((s) => Math.max(0, s - 1));
 
-  function addFiles(list: FileList | null) {
+  async function addFiles(list: FileList | null) {
     if (!list) return;
-    const ok = Array.from(list).filter((x) => x.size <= 8 * 1024 * 1024 && /^image\//.test(x.type || "image/heic"));
-    if (ok.length < list.length) setErrors((e) => ({ ...e, files: "Часть файлов пропущена: допустимы изображения до 8 МБ" }));
-    setFiles((p) => [...p, ...ok].slice(0, 10));
+    const picked = Array.from(list).filter((x) => /^image\//.test(x.type || "image/heic"));
+    const ready = await Promise.all(picked.filter((x) => x.size <= 25 * 1024 * 1024).map(shrink));
+    let err = ready.length < list.length ? "Часть файлов пропущена: допустимы изображения" : "";
+    setFiles((prev) => {
+      const out: File[] = [];
+      let total = 0;
+      for (const f of [...prev, ...ready].slice(0, 10)) {
+        if (total + f.size > MAX_TOTAL) { err = "Общий размер фото слишком большой — уберите часть или выберите меньше снимков"; continue; }
+        total += f.size;
+        out.push(f);
+      }
+      return out;
+    });
+    setErrors((e) => ({ ...e, files: err }));
   }
 
   async function submit(e: React.FormEvent) {
@@ -139,7 +170,7 @@ export function LeadWizard({ initialService, callback }: { initialService?: Form
               </ul>
             )}
             {errors.files && <p role="alert" className="mt-1 text-sm text-red-700">{errors.files}</p>}
-            <p className="mt-1 text-xs text-slate-500">До 10 файлов, JPG/PNG/WebP/HEIC, до 8 МБ каждый.</p>
+            <p className="mt-1 text-xs text-slate-500">До 10 фото, JPG/PNG/WebP/HEIC; фото автоматически уменьшаются, общий размер — до 4 МБ.</p>
           </div>
         </div>
       )}

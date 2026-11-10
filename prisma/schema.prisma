@@ -169,3 +169,12 @@ model RateLimit {
 
   @@index([key, createdAt])
 }
+
+/// Файлы в БД — режим для Vercel (нет постоянного диска). В Docker используется диск (UPLOAD_DIR).
+model StoredFile {
+  key       String   @id
+  data      Bytes
+  mime      String
+  size      Int
+  createdAt DateTime @default(now())
+}
