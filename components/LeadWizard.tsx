@@ -96,6 +96,9 @@ export function LeadWizard({ initialService, callback }: { initialService?: Form
 
   return (
     <form onSubmit={submit} noValidate className="mx-auto max-w-2xl">
+      <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuemin={1} aria-valuemax={4} aria-valuenow={step + 1} aria-label="Прогресс заполнения">
+        <div className="h-full rounded-full bg-ice transition-all" style={{ width: `${((step + 1) / 4) * 100}%` }} />
+      </div>
       <ol className="mb-6 flex gap-2" aria-label="Шаги заявки">
         {STEPS.map((s, i) => (
           <li key={s} aria-current={i === step ? "step" : undefined} className={`flex-1 rounded-md px-2 py-1 text-center text-xs sm:text-sm ${i === step ? "bg-navy text-white" : i < step ? "bg-ice-50 text-navy" : "bg-slate-100 text-slate-500"}`}>{i + 1}. {s}</li>
@@ -107,7 +110,7 @@ export function LeadWizard({ initialService, callback }: { initialService?: Form
           <legend className="mb-3 text-lg font-semibold">Что вам нужно? (можно выбрать несколько)</legend>
           <div className="grid gap-2">
             {SERVICE_CHOICES.map((s) => (
-              <label key={s.key} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border p-3 ${services.includes(s.key) ? "border-navy bg-ice-50" : "border-slate-300"}`}>
+              <label key={s.key} className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-xl border-2 p-3 transition-colors ${services.includes(s.key) ? "border-navy bg-ice-50" : "border-slate-200 hover:border-ice"}`}>
                 <input type="checkbox" className="h-5 w-5" checked={services.includes(s.key)} onChange={() => toggle(s.key)} />
                 {s.label}
               </label>

@@ -1,4 +1,4 @@
-import { Header, Footer } from "@/components/SiteChrome";
+import { Header, Footer, MobileBar } from "@/components/SiteChrome";
 import { getSettings } from "@/lib/site";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -9,6 +9,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <Header s={s} />
       <main id="main">{children}</main>
       <Footer s={s} />
+      <MobileBar s={s} />
     </>
   );
 }

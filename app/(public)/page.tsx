@@ -28,8 +28,13 @@ export default async function Home() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
-      <section className="bg-navy text-white">
-        <div className="container-x py-16 md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-navy via-navy to-navy-700 text-white">
+        <svg aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-[28rem] w-[28rem] text-white/5" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+          <path d="M50 5v90M10 27.5l80 45M10 72.5l80-45M50 5l-8 8m8-8 8 8M50 95l-8-8m8 8 8-8" />
+          <circle cx="50" cy="50" r="12" />
+        </svg>
+        <div className="container-x relative py-16 md:py-24">
+          <p className="mb-4 inline-block rounded-full bg-white/10 px-3 py-1 text-sm">{s.region}</p>
           <h1 className="max-w-3xl text-3xl font-bold leading-tight sm:text-5xl">{s.heroTitle}</h1>
           <p className="mt-5 max-w-2xl text-lg text-slate-200">{s.heroText}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -47,11 +52,14 @@ export default async function Home() {
       <section className="container-x mt-16">
         <Reveal>
           <h2 className="text-2xl font-bold text-navy sm:text-3xl">Услуги</h2>
+          <p className="mt-2 max-w-2xl text-slate-600">Выберите направление — на странице услуги описан перечень работ и можно сразу оставить заявку.</p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((sv) => (
-              <Link key={sv.id} href={`/uslugi/${sv.slug}`} className="rounded-xl border border-slate-200 p-5 transition-shadow hover:shadow-md">
-                <h3 className="font-semibold text-navy">{sv.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{sv.short}</p>
+            {services.map((sv, i) => (
+              <Link key={sv.id} href={`/uslugi/${sv.slug}`} className="group flex flex-col rounded-xl border border-slate-200 p-5 transition hover:-translate-y-0.5 hover:border-ice hover:shadow-md">
+                <span className="grid h-9 w-9 place-items-center rounded-lg bg-ice-50 text-sm font-bold text-navy">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="mt-3 font-semibold text-navy">{sv.title}</h3>
+                <p className="mt-2 flex-1 text-sm text-slate-600">{sv.short}</p>
+                <span className="mt-4 text-sm font-semibold text-ice transition-transform group-hover:translate-x-1">Подробнее →</span>
               </Link>
             ))}
           </div>

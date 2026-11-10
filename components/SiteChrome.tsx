@@ -30,7 +30,7 @@ export function Header({ s }: { s: SiteSettings }) {
 
 export function Footer({ s }: { s: SiteSettings }) {
   return (
-    <footer className="mt-20 bg-graphite text-slate-200">
+    <footer className="mt-20 bg-graphite pb-20 text-slate-200 md:pb-0">
       <div className="container-x grid gap-8 py-10 md:grid-cols-3">
         <div>
           <p className="text-lg font-bold text-white">{s.companyName}</p>
@@ -51,6 +51,16 @@ export function Footer({ s }: { s: SiteSettings }) {
         </div>
       </div>
     </footer>
+  );
+}
+
+/** Нижняя панель на мобильных: быстрый звонок и заявка всегда под рукой. */
+export function MobileBar({ s }: { s: SiteSettings }) {
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-slate-200 bg-white/95 p-2 backdrop-blur md:hidden">
+      <TrackedLink goal="phone_click" href={telHref(s.phone)} className="btn btn-secondary !min-h-11 !py-2">Позвонить</TrackedLink>
+      <Link href="/zayavka" className="btn btn-primary !min-h-11 !py-2">Оставить заявку</Link>
+    </div>
   );
 }
 

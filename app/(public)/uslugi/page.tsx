@@ -16,7 +16,7 @@ export default async function Services() {
       <h1 className="text-3xl font-bold text-navy">Услуги</h1>
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         {services.map((s) => (
-          <Link key={s.id} href={`/uslugi/${s.slug}`} className="rounded-xl border border-slate-200 p-6 hover:shadow-md">
+          <Link key={s.id} href={`/uslugi/${s.slug}`} className="rounded-xl border border-slate-200 p-6 transition hover:-translate-y-0.5 hover:border-ice hover:shadow-md">
             <h2 className="text-lg font-semibold text-navy">{s.title}</h2>
             <p className="mt-2 text-slate-600">{s.short}</p>
           </Link>
