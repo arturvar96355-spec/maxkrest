@@ -13,6 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+export const dynamic = "force-dynamic"; // настройки сайта берутся из БД — без обращения к БД при сборке
+
 export const viewport = { width: "device-width", initialScale: 1, themeColor: "#0b2545" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

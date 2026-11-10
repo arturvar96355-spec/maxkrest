@@ -10,10 +10,6 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const ip = clientIp(req.headers);
-  if (!(await hit(`lead:${ip}`, 5, 600))) {
-    return NextResponse.json({ error: "Слишком много заявок. Попробуйте позже." }, { status: 429 });
-  }
-
   let form: FormData;
   try {
     form = await req.formData();
@@ -35,6 +31,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Проверьте поля формы", fields }, { status: 422 });
   }
   const d = parsed.data;
+
+  // Лимит считаем только для валидных заявок, чтобы ошибки заполнения не блокировали клиента
+  if (!(await hit(`lead:${ip}`, 5, 600))) {
+    return NextResponse.json({ error: "Слишком много заявок. Попробуйте позже." }, { status: 429 });
+  }
 
   // Антиспам: honeypot и слишком быстрая отправка (< 3 сек) — тихо «успех» без сохранения
   if (d.website || Date.now() - d.startedAt < 3000) {

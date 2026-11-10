@@ -35,7 +35,7 @@ export default async function Blocks() {
       <section><h2 className="mb-4 text-xl font-bold text-navy">Как мы работаем (этапы)</h2><div className="space-y-3">{steps.map((a) => <BlockForm key={a.id} kind="step" item={a} />)}<BlockForm kind="step" /></div></section>
       <section>
         <h2 className="mb-1 text-xl font-bold text-navy">Отзывы</h2>
-        <p className="mb-4 text-sm text-slate-500">Публикуйте только подтверждённые отзывы. Блок отзывов на сайте пока не выводится — можно подключить после согласования.</p>
+        <p className="mb-4 text-sm text-slate-500">Публикуйте только подтверждённые отзывы. Отмеченные «Показывать» отзывы выводятся на главной.</p>
         <div className="space-y-3">{reviews.map((a) => <BlockForm key={a.id} kind="review" showVisible item={{ ...a, title: a.author }} />)}<BlockForm kind="review" showVisible /></div>
       </section>
       <section>

@@ -16,12 +16,13 @@ export async function generateMetadata(): Promise<Metadata> {
 const objectTypes = ["Частные дома и участки", "Жилые комплексы", "Бизнес-центры и офисы", "Торговые объекты", "Склады и предприятия", "Парковки и проезды"];
 
 export default async function Home() {
-  const [s, services, advantages, steps, photos] = await Promise.all([
+  const [s, services, advantages, steps, photos, reviews] = await Promise.all([
     getSettings(),
     db.service.findMany({ where: { visible: true }, orderBy: { sort: "asc" } }),
     db.advantage.findMany({ where: { visible: true }, orderBy: { sort: "asc" } }),
     db.step.findMany({ orderBy: { sort: "asc" } }),
     db.photo.findMany({ orderBy: { sort: "asc" }, take: 6 }),
+    db.review.findMany({ where: { visible: true }, orderBy: { sort: "asc" }, take: 6 }),
   ]);
   const ld = { "@context": "https://schema.org", "@type": "LocalBusiness", name: s.companyName, telephone: s.phone, areaServed: s.region, url: siteUrl() };
   return (
@@ -106,6 +107,20 @@ export default async function Home() {
           </ul>
         </Reveal>
       </section>
+
+      {reviews.length > 0 && (
+        <section className="container-x mt-16">
+          <h2 className="text-2xl font-bold text-navy sm:text-3xl">Отзывы</h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {reviews.map((r) => (
+              <blockquote key={r.id} className="rounded-xl border border-slate-200 p-5">
+                <p>{r.text}</p>
+                <footer className="mt-3 text-sm font-semibold text-navy">{r.author}</footer>
+              </blockquote>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="container-x mt-16">
         <div className="rounded-2xl bg-navy p-8 text-white sm:p-12">

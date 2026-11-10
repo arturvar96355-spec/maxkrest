@@ -15,9 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=build /app/node_modules/prisma ./node_modules/prisma
-COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
+# Полный node_modules: Prisma CLI (migrate deploy) и скрипты имеют транзитивные зависимости
+COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/scripts ./scripts
 RUN mkdir -p /data/uploads
 EXPOSE 3000
