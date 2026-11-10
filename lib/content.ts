@@ -1,11 +1,9 @@
 import { db } from "@/lib/db";
 import defaults from "@/prisma/defaults.json";
+import { isDemo } from "@/lib/dbStatus";
 
-/**
- * Демо-режим: если DATABASE_URL не задан (например, предпросмотр на Vercel без БД),
- * публичные страницы показывают типовое содержимое, а заявки не принимаются.
- */
-export const isDemo = () => !process.env.DATABASE_URL;
+// Демо-режим (нет БД / нет миграций): типовое содержимое, заявки не принимаются. См. lib/dbStatus.ts.
+export { isDemo };
 
 export type ServiceView = {
   id: string; slug: string; title: string; short: string; body: string; works: string[];
@@ -16,18 +14,18 @@ const demoServices = (): ServiceView[] =>
   defaults.services.map((s, i) => ({ ...s, id: s.slug, image: null, visible: true, sort: i, metaTitle: null, metaDesc: null }));
 
 export async function getServices(): Promise<ServiceView[]> {
-  if (isDemo()) return demoServices();
+  if (await isDemo()) return demoServices();
   return db.service.findMany({ where: { visible: true }, orderBy: { sort: "asc" } });
 }
 
 export async function getService(slug: string): Promise<ServiceView | null> {
-  if (isDemo()) return demoServices().find((s) => s.slug === slug) ?? null;
+  if (await isDemo()) return demoServices().find((s) => s.slug === slug) ?? null;
   const s = await db.service.findUnique({ where: { slug } });
   return s && s.visible ? s : null;
 }
 
 export async function getHomeBlocks() {
-  if (isDemo()) {
+  if (await isDemo()) {
     return {
       advantages: defaults.advantages.map((a, i) => ({ id: String(i), ...a })),
       steps: defaults.steps.map((a, i) => ({ id: String(i), ...a })),

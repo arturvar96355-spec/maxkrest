@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { db } from "@/lib/db";
+import { dbReady } from "@/lib/dbStatus";
 import type { SiteSettings } from "@prisma/client";
 
 const DEMO_SETTINGS: SiteSettings = {
@@ -10,7 +11,7 @@ const DEMO_SETTINGS: SiteSettings = {
 };
 
 export const getSettings = cache(async (): Promise<SiteSettings> => {
-  if (!process.env.DATABASE_URL) return DEMO_SETTINGS;
+  if (!(await dbReady())) return DEMO_SETTINGS;
   return db.siteSettings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } });
 });
 
