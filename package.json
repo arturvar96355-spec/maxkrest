@@ -12,7 +12,8 @@
     "test": "vitest run",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node prisma/seed.mjs",
-    "admin:create": "node scripts/create-admin.mjs"
+    "admin:create": "node scripts/create-admin.mjs",
+    "test:e2e": "playwright test"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"
@@ -28,6 +29,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.3.5",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^26.6.6",

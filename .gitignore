@@ -8,3 +8,6 @@ out
 /backups
 *.tsbuildinfo
 next-env.d.ts
+tests/e2e/.tmp
+test-results
+playwright-report

@@ -24,6 +24,6 @@ Docker Compose: app + postgres + caddy (HTTPS) + notify-retry.
 - Секреты только в окружении, не в коде. PR создавать только по запросу.
 
 ## Команды
-`npm run dev` · `npm run build` · `npm test` · `npm run lint` · `npm run typecheck`
+`npm run dev` · `npm run build` · `npm test` · `npm run test:e2e` · `npm run lint` · `npm run typecheck`
 `npx prisma migrate dev` · `npm run db:seed` · `npm run admin:create` (ADMIN_EMAIL/ADMIN_PASSWORD; в Docker — автоматически)
 Деплой: docs/DEPLOY.md; бэкап: scripts/backup.sh (docs/BACKUP.md).
