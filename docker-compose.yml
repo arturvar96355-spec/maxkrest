@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: snow
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?задайте DB_PASSWORD}
+      POSTGRES_DB: snow
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U snow"]
+      interval: 10s
+      retries: 5
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgresql://snow:${DB_PASSWORD}@db:5432/snow
+      SITE_URL: ${SITE_URL:?задайте SITE_URL}
+      AUTH_SECRET: ${AUTH_SECRET:?задайте AUTH_SECRET}
+      CRON_SECRET: ${CRON_SECRET:?задайте CRON_SECRET}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - uploads:/data/uploads
+
+  # Повторная отправка недоставленных Telegram-уведомлений каждую минуту
+  notify-retry:
+    image: curlimages/curl:8.10.1
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+    entrypoint: ["sh", "-c", "while true; do curl -s -X POST -H \"authorization: Bearer $$CRON_SECRET\" http://app:3000/api/cron/retry-notify >/dev/null; sleep 60; done"]
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?задайте SITE_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on: [app]
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:

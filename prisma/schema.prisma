@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeadStatus {
+  NEW
+  IN_PROGRESS
+  CONTACTED
+  AWAITING_INSPECTION
+  PREPARING_OFFER
+  OFFER_SENT
+  CONFIRMED
+  IN_WORK
+  DONE
+  CANCELLED
+}
+
+enum NotifyState {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Lead {
+  id             String      @id @default(cuid())
+  number         Int         @unique @default(autoincrement())
+  status         LeadStatus  @default(NEW)
+  services       String[]
+  objectType     String?
+  params         Json        @default("{}")
+  city           String?
+  street         String?
+  accessNotes    String?
+  orderKind      String?
+  desiredAt      String?
+  name           String
+  phone          String
+  organization   String?
+  email          String?
+  contactMethod  String?
+  comment        String?
+  consentAt      DateTime
+  idempotencyKey String?     @unique
+  agreedPrice    String?
+  outcome        String?
+  notifyState    NotifyState @default(PENDING)
+  notifyAttempts Int         @default(0)
+  notifyNextAt   DateTime    @default(now())
+  notifyError    String?
+  notifiedAt     DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  files          LeadFile[]
+  notes          LeadNote[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([notifyState, notifyNextAt])
+}
+
+model LeadFile {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  storedAs  String
+  origName  String
+  mime      String
+  size      Int
+  createdAt DateTime @default(now())
+}
+
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  text      String
+  author    String?
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  short     String
+  body      String
+  works     String[]
+  image     String?
+  formKey   String
+  visible   Boolean  @default(true)
+  sort      Int      @default(0)
+  metaTitle String?
+  metaDesc  String?
+}
+
+model Advantage {
+  id      String  @id @default(cuid())
+  title   String
+  text    String
+  sort    Int     @default(0)
+  visible Boolean @default(true)
+}
+
+model Step {
+  id    String @id @default(cuid())
+  title String
+  text  String
+  sort  Int    @default(0)
+}
+
+model Review {
+  id      String  @id @default(cuid())
+  author  String
+  text    String
+  visible Boolean @default(false)
+  sort    Int     @default(0)
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  storedAs  String
+  caption   String?
+  createdAt DateTime @default(now())
+  sort      Int      @default(0)
+}
+
+model SiteSettings {
+  id            Int     @id @default(1)
+  companyName   String  @default("Снегоуборка")
+  logoText      String  @default("Снегоуборка")
+  logoUrl       String?
+  phone         String  @default("+7 (000) 000-00-00")
+  email         String?
+  address       String?
+  telegramUrl   String?
+  whatsappUrl   String?
+  region        String  @default("Москва и Московская область")
+  metrikaId     String?
+  tgChatId      String?
+  heroTitle     String  @default("Уборка снега в Москве и Московской области")
+  heroText      String  @default("Уборка территорий, очистка крыш, парковок и проездов, механизированная уборка и вывоз снега для частных клиентов и организаций.")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
+model RateLimit {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
