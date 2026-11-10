@@ -9,6 +9,9 @@ import type { FormKey } from "@/lib/serviceFields";
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ error: "Демо-режим: база данных не подключена, заявки не принимаются." }, { status: 503 });
+  }
   const ip = clientIp(req.headers);
   let form: FormData;
   try {

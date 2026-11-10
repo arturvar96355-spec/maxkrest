@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { db } from "@/lib/db";
+import { getService } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -9,15 +9,15 @@ type P = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: P): Promise<Metadata> {
   const { slug } = await params;
-  const s = await db.service.findUnique({ where: { slug } });
-  if (!s || !s.visible) return {};
+  const s = await getService(slug);
+  if (!s) return {};
   return { title: s.metaTitle || s.title, description: s.metaDesc || s.short, alternates: { canonical: `/uslugi/${s.slug}` } };
 }
 
 export default async function ServicePage({ params }: P) {
   const { slug } = await params;
-  const s = await db.service.findUnique({ where: { slug } });
-  if (!s || !s.visible) notFound();
+  const s = await getService(slug);
+  if (!s) notFound();
   return (
     <div className="container-x py-12">
       <nav aria-label="Хлебные крошки" className="text-sm text-slate-500"><Link href="/uslugi">Услуги</Link> / {s.title}</nav>

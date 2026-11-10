@@ -14,7 +14,14 @@ const opt = (fd: FormData, k: string) => s(fd, k) || null;
 const lines = (v: string) => v.split("\n").map((x) => x.trim()).filter(Boolean);
 
 export async function loginAction(_: unknown, fd: FormData) {
-  const ok = await login(s(fd, "email"), String(fd.get("password") ?? ""), clientIp(await headers()));
+  if (!process.env.DATABASE_URL) return { error: "База данных не подключена (нет DATABASE_URL) — см. docs/VERCEL.md." };
+  let ok = false;
+  try {
+    ok = await login(s(fd, "email"), String(fd.get("password") ?? ""), clientIp(await headers()));
+  } catch (e) {
+    console.error("[login]", e);
+    return { error: "Ошибка сервера при входе: проверьте подключение к БД и применённые миграции (/api/health)." };
+  }
   if (!ok) return { error: "Неверные данные или слишком много попыток. Попробуйте позже." };
   redirect("/admin/zayavki");
 }

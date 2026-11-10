@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { db } from "@/lib/db";
+import { getServices, getHomeBlocks } from "@/lib/content";
 import { getSettings, siteUrl } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
 import { TrackedLink } from "@/components/TrackedLink";
@@ -16,14 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const objectTypes = ["Частные дома и участки", "Жилые комплексы", "Бизнес-центры и офисы", "Торговые объекты", "Склады и предприятия", "Парковки и проезды"];
 
 export default async function Home() {
-  const [s, services, advantages, steps, photos, reviews] = await Promise.all([
-    getSettings(),
-    db.service.findMany({ where: { visible: true }, orderBy: { sort: "asc" } }),
-    db.advantage.findMany({ where: { visible: true }, orderBy: { sort: "asc" } }),
-    db.step.findMany({ orderBy: { sort: "asc" } }),
-    db.photo.findMany({ orderBy: { sort: "asc" }, take: 6 }),
-    db.review.findMany({ where: { visible: true }, orderBy: { sort: "asc" }, take: 6 }),
-  ]);
+  const [s, services, { advantages, steps, photos, reviews }] = await Promise.all([getSettings(), getServices(), getHomeBlocks()]);
   const ld = { "@context": "https://schema.org", "@type": "LocalBusiness", name: s.companyName, telephone: s.phone, areaServed: s.region, url: siteUrl() };
   return (
     <>

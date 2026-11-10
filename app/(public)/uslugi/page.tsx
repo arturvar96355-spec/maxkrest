@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { db } from "@/lib/db";
+import { getServices } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Services() {
-  const services = await db.service.findMany({ where: { visible: true }, orderBy: { sort: "asc" } });
+  const services = await getServices();
   return (
     <div className="container-x py-12">
       <h1 className="text-3xl font-bold text-navy">Услуги</h1>
