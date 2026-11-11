@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TrackedLink } from "./TrackedLink";
 import { MobileNav } from "./MobileNav";
+import { HeaderScroll } from "./HeaderScroll";
 import { formatPhone } from "@/lib/phone";
 import type { SiteSettings } from "@prisma/client";
 
@@ -8,7 +9,8 @@ const telHref = (p: string) => "tel:+" + p.replace(/\D/g, "").replace(/^8/, "7")
 
 export function Header({ s }: { s: SiteSettings }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header id="site-header" className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">
+      <HeaderScroll />
       <div className="container-x flex min-h-16 items-center justify-between gap-3">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold text-navy">
           {/* eslint-disable-next-line @next/next/no-img-element */}
