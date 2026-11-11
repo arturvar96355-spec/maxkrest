@@ -85,3 +85,20 @@ test("заявка с фото сохраняется, видна в админ�
   await anon.close();
   await adminCtx.close();
 });
+
+test("быстрая форма «Заказать звонок» на главной создаёт заявку", async ({ page }) => {
+  await page.goto("/");
+  await page.fill("#cb-name", "Звонок Е2Е");
+  await page.fill("#cb-phone", "89005550999");
+  await page.getByRole("checkbox", { name: /Согласен/ }).check();
+  await page.waitForTimeout(3200); // антиспам: минимальное время заполнения
+  await page.getByRole("button", { name: "Перезвоните мне" }).click();
+  await expect(page.getByRole("status")).toContainText("Мы перезвоним");
+});
+
+test("мобильное меню открывается и ведёт по разделам", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Открыть меню" }).click();
+  await page.getByRole("link", { name: "Услуги" }).first().click();
+  await expect(page).toHaveURL(/\/uslugi$/);
+});

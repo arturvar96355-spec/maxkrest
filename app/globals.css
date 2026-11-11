@@ -26,3 +26,8 @@ body { @apply bg-white text-graphite antialiased; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+/* Лёгкий снегопад в первом экране (только CSS, отключается при reduce-motion) */
+@keyframes snowfall { from { transform: translate3d(0, -10%, 0); opacity: 0; } 10% { opacity: .7; } to { transform: translate3d(var(--drift, 20px), 110vh, 0); opacity: 0; } }
+.snow { position: absolute; top: 0; width: 6px; height: 6px; border-radius: 9999px; background: #fff; animation: snowfall var(--dur, 12s) linear infinite; animation-delay: var(--delay, 0s); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .snow { display: none; } }

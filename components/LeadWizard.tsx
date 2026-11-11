@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { SERVICE_CHOICES, FIELDS, ORDER_KINDS, CONTACT_METHODS, type FormKey, type FieldDef } from "@/lib/serviceFields";
 import { reachGoal } from "./goals";
+import { formatPhoneInput } from "@/lib/phoneMask";
 
 const STEPS = ["Услуга", "Объект", "Адрес и сроки", "Контакты"];
 type Params = Record<string, Record<string, string>>;
@@ -27,21 +28,7 @@ async function shrink(file: File): Promise<File> {
   }
 }
 
-function formatPhoneInput(v: string) {
-  let d = v.replace(/\D/g, "");
-  if (d.startsWith("8")) d = "7" + d.slice(1);
-  if (!d.startsWith("7")) d = "7" + d;
-  d = d.slice(0, 11);
-  const p = [d.slice(1, 4), d.slice(4, 7), d.slice(7, 9), d.slice(9, 11)];
-  let out = "+7";
-  if (p[0]) out += " (" + p[0] + (p[0].length === 3 ? ")" : "");
-  if (p[1]) out += " " + p[1];
-  if (p[2]) out += "-" + p[2];
-  if (p[3]) out += "-" + p[3];
-  return out;
-}
-
-export function LeadWizard({ initialService, callback }: { initialService?: FormKey; callback?: boolean }) {
+export function LeadWizard({ initialService, callback, contactMethods = CONTACT_METHODS }: { initialService?: FormKey; callback?: boolean; contactMethods?: string[] }) {
   const [step, setStep] = useState(callback ? 3 : 0);
   const [services, setServices] = useState<FormKey[]>(initialService ? [initialService] : callback ? ["other"] : []);
   const [params, setParams] = useState<Params>({});
@@ -203,7 +190,7 @@ export function LeadWizard({ initialService, callback }: { initialService?: Form
           <div>
             <label className="label" htmlFor="cm">Предпочтительный способ связи</label>
             <select id="cm" className="field" value={f.contactMethod} onChange={(e) => setField("contactMethod", e.target.value)}>
-              {CONTACT_METHODS.map((o) => <option key={o}>{o}</option>)}
+              {contactMethods.map((o) => <option key={o}>{o}</option>)}
             </select>
           </div>
           <div>

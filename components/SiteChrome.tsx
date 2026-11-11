@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TrackedLink } from "./TrackedLink";
+import { MobileNav } from "./MobileNav";
 import { formatPhone } from "@/lib/phone";
 import type { SiteSettings } from "@prisma/client";
 
@@ -21,7 +22,8 @@ export function Header({ s }: { s: SiteSettings }) {
         </nav>
         <div className="flex items-center gap-3">
           <TrackedLink goal="phone_click" href={telHref(s.phone)} className="hidden text-sm font-semibold text-navy sm:block">{s.phone}</TrackedLink>
-          <Link href="/zayavka" className="btn btn-primary !min-h-10 !px-4 !py-2 text-sm">Оставить заявку</Link>
+          <div className="hidden md:block"><Link href="/zayavka" className="btn btn-primary !min-h-10 !px-4 !py-2 text-sm">Оставить заявку</Link></div>
+          <MobileNav />
         </div>
       </div>
     </header>
@@ -51,16 +53,6 @@ export function Footer({ s }: { s: SiteSettings }) {
         </div>
       </div>
     </footer>
-  );
-}
-
-/** Нижняя панель на мобильных: быстрый звонок и заявка всегда под рукой. */
-export function MobileBar({ s }: { s: SiteSettings }) {
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-slate-200 bg-white/95 p-2 backdrop-blur md:hidden">
-      <TrackedLink goal="phone_click" href={telHref(s.phone)} className="btn btn-secondary !min-h-11 !py-2">Позвонить</TrackedLink>
-      <Link href="/zayavka" className="btn btn-primary !min-h-11 !py-2">Оставить заявку</Link>
-    </div>
   );
 }
 

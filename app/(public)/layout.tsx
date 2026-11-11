@@ -1,4 +1,5 @@
-import { Header, Footer, MobileBar } from "@/components/SiteChrome";
+import { Header, Footer, telHref } from "@/components/SiteChrome";
+import { MobileBar } from "@/components/MobileBar";
 import { getSettings } from "@/lib/site";
 import { isDemo } from "@/lib/content";
 
@@ -15,7 +16,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <Header s={s} />
       <main id="main">{children}</main>
       <Footer s={s} />
-      <MobileBar s={s} />
+      <MobileBar phoneHref={telHref(s.phone)} />
     </>
   );
 }
