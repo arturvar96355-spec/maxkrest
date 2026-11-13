@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LeadWizard } from "@/components/LeadWizard";
+import { PageHero } from "@/components/PageHero";
 import { FIELDS, CONTACT_METHODS, type FormKey } from "@/lib/serviceFields";
 import { getSettings } from "@/lib/site";
 import { isDemo } from "@/lib/content";
@@ -15,10 +16,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
   const contactMethods = CONTACT_METHODS.filter((m) => demo || m === "Телефон" || (m === "Telegram" && settings.telegramUrl) || (m === "WhatsApp" && settings.whatsappUrl));
   const initial = sp.service && sp.service in FIELDS ? (sp.service as FormKey) : undefined;
   return (
-    <div className="container-x py-10">
-      <h1 className="mb-2 text-center text-3xl font-bold text-navy">{sp.callback ? "Заказать звонок" : "Оставить заявку"}</h1>
-      <p className="mb-8 text-center text-slate-600">Это займёт 1–3 минуты. Стоимость обсуждаем после уточнения деталей.</p>
+    <>
+      <PageHero id="form" kind="complex" compact title={sp.callback ? "Заказать звонок" : "Оставить заявку"} lead="Это займёт 1–3 минуты. Стоимость обсуждаем после уточнения деталей." />
+      <div className="container-x py-10">
       <LeadWizard initialService={initial} callback={!!sp.callback} contactMethods={contactMethods} />
-    </div>
+      </div>
+    </>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TrackedLink } from "./TrackedLink";
 import { MobileNav } from "./MobileNav";
 import { HeaderScroll } from "./HeaderScroll";
+import { LogoMark } from "./LogoMark";
 import { formatPhone } from "@/lib/phone";
 import type { SiteSettings } from "@prisma/client";
 
@@ -14,7 +15,7 @@ export function Header({ s }: { s: SiteSettings }) {
       <div className="container-x flex min-h-16 items-center justify-between gap-3">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold text-navy">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {s.logoUrl ? <img src={s.logoUrl} alt={s.companyName} className="h-9 w-auto" /> : <span aria-hidden className="grid h-9 w-9 place-items-center rounded-lg bg-navy text-white">❄</span>}
+          {s.logoUrl ? <img src={s.logoUrl} alt={s.companyName} className="h-9 w-auto" /> : <span aria-hidden className="grid h-10 w-10 place-items-center rounded-lg bg-navy text-white"><LogoMark className="h-7 w-7" /></span>}
           <span>{s.logoText}</span>
         </Link>
         <nav aria-label="Основная" className="hidden gap-6 text-sm font-medium md:flex">

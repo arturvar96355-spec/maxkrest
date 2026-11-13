@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getService, getServices } from "@/lib/content";
 import { getSettings, siteUrl } from "@/lib/site";
+import { PageHero } from "@/components/PageHero";
 import { ServiceIcon } from "@/components/ServiceIcon";
 import { TrackedLink } from "@/components/TrackedLink";
 import { telHref } from "@/components/SiteChrome";
@@ -25,21 +26,23 @@ export default async function ServicePage({ params }: P) {
   const others = all.filter((x) => x.slug !== s.slug).slice(0, 4);
   const ld = { "@context": "https://schema.org", "@type": "Service", name: s.title, description: s.short, areaServed: settings.region, provider: { "@type": "LocalBusiness", name: settings.companyName }, url: `${siteUrl()}/uslugi/${s.slug}` };
   return (
-    <div className="container-x py-10">
+    <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
-      <nav aria-label="Хлебные крошки" className="text-sm text-slate-500"><Link href="/" className="hover:underline">Главная</Link> / <Link href="/uslugi" className="hover:underline">Услуги</Link> / <span className="text-graphite">{s.title}</span></nav>
-
-      <div className="mt-6 grid gap-10 lg:grid-cols-[1fr_20rem]">
+      <PageHero
+        id={`svc-${s.slug}`}
+        kind={s.formKey}
+        image={s.image}
+        icon={<ServiceIcon name={s.formKey} className="h-7 w-7" />}
+        eyebrow={<nav aria-label="Хлебные крошки"><Link href="/" className="hover:underline">Главная</Link> / <Link href="/uslugi" className="hover:underline">Услуги</Link></nav>}
+        title={s.title}
+        lead={s.short}
+      >
+        <Link href={`/zayavka?service=${s.formKey}`} className="btn btn-accent">Оставить заявку <span aria-hidden className="ml-2">→</span></Link>
+      </PageHero>
+      <div className="container-x py-10">
+      <div className="grid gap-10 lg:grid-cols-[1fr_20rem]">
         <article>
-          <div className="flex items-start gap-4">
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-navy text-white"><ServiceIcon name={s.formKey} className="h-7 w-7" /></span>
-            <h1 className="text-3xl font-bold leading-tight text-navy sm:text-4xl">{s.title}</h1>
-          </div>
-          <p className="mt-5 max-w-3xl text-lg">{s.body}</p>
-          {s.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={`/api/files/${s.image}`} alt={s.title} className="mt-6 max-h-96 w-full rounded-xl object-cover" />
-          )}
+          <p className="max-w-3xl text-lg">{s.body}</p>
           <h2 className="mt-10 text-xl font-semibold text-navy">Что входит в работы</h2>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
             {s.works.map((w) => (
@@ -72,5 +75,6 @@ export default async function ServicePage({ params }: P) {
         </aside>
       </div>
     </div>
+    </>
   );
 }

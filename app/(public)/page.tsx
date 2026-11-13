@@ -8,7 +8,8 @@ import { CallbackForm } from "@/components/CallbackForm";
 import { ServiceIcon } from "@/components/ServiceIcon";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { Timeline } from "@/components/Timeline";
-import { Parallax } from "@/components/Parallax";
+import { Scene } from "@/components/Scene";
+import { SnowField } from "@/components/SnowField";
 import { telHref } from "@/components/SiteChrome";
 
 export const dynamic = "force-dynamic";
@@ -26,14 +27,6 @@ const objectTypes = [
   ["removal", "Склады и предприятия"],
   ["parking", "Парковки и проезды"],
 ] as const;
-
-const snow = Array.from({ length: 16 }, (_, i) => ({
-  left: `${(i * 6.4 + 3) % 100}%`,
-  size: 3 + (i % 4) * 1.5,
-  dur: 9 + (i % 5) * 2.2,
-  delay: -((i * 1.7) % 12),
-  drift: (i % 2 ? 1 : -1) * (14 + (i % 3) * 10),
-}));
 
 function Section({ n, label, title, lead, children, id }: { n: string; label: string; title: string; lead?: string; children: React.ReactNode; id?: string }) {
   return (
@@ -69,6 +62,7 @@ export default async function Home() {
   const [s, services, { advantages, steps, photos, reviews }] = await Promise.all([getSettings(), getServices(), getHomeBlocks()]);
   const ld = { "@context": "https://schema.org", "@type": "LocalBusiness", name: s.companyName, telephone: s.phone, areaServed: s.region, url: siteUrl() };
   const words = s.heroTitle.split(/\s+/);
+  const accentFrom = words.findIndex((w) => /^Москв/i.test(w)); // «…в Москве и Московской области» — акцентным цветом
   const bento = services.length === 7;
   return (
     <>
@@ -76,19 +70,9 @@ export default async function Home() {
 
       {/* ===== Первый экран ===== */}
       <section className="relative overflow-hidden bg-gradient-to-br from-navy-900 via-navy to-navy-700 text-white">
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-40 h-[34rem] w-[34rem] rounded-full bg-ice/20 blur-3xl" />
-        <Parallax className="pointer-events-none absolute -right-24 top-4 h-[30rem] w-[30rem] text-white/[.06]" y={160} rotate={40}>
-          <svg viewBox="0 0 100 100" className="floaty h-full w-full" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
-            <path d="M50 5v90M10 27.5l80 45M10 72.5l80-45M50 5l-8 8m8-8 8 8M50 95l-8-8m8 8 8-8M11 28l11-1m-11 1 4 10M89 72l-11 1m11-1-4-10M11 72l4-10m-4 10 11 1M89 28l-4 10m4-10-11-1" />
-            <circle cx="50" cy="50" r="12" />
-          </svg>
-        </Parallax>
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          {snow.map((f, i) => (
-            <span key={i} className="snow" style={{ left: f.left, width: f.size, height: f.size, ["--dur" as string]: `${f.dur}s`, ["--delay" as string]: `${f.delay}s`, ["--drift" as string]: `${f.drift}px` }} />
-          ))}
-        </div>
-
+        <div aria-hidden className="pointer-events-none absolute -right-32 -top-40 h-[34rem] w-[34rem] rounded-full bg-accent/15 blur-3xl" />
+        <Scene kind="mechanized" className="opacity-80" />
+        <SnowField count={46} id="sf-home" />
         <div className="container-x relative grid gap-12 pb-28 pt-14 md:pt-20 lg:grid-cols-[1.25fr_1fr] lg:items-center lg:pb-36">
           <div>
             <p className="fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm" style={{ ["--d" as string]: "0s" }}>
@@ -97,13 +81,13 @@ export default async function Home() {
             <h1 className="max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
               {words.map((w, i) => (
                 <span key={i}>
-                  <span className="hero-word"><span style={{ ["--d" as string]: `${0.12 + i * 0.08}s` }}>{w}</span></span>{" "}
+                  <span className="hero-word"><span className={accentFrom >= 0 && i >= accentFrom ? "text-[#4d94ff]" : undefined} style={{ ["--d" as string]: `${0.12 + i * 0.08}s` }}>{w}</span></span>{" "}
                 </span>
               ))}
             </h1>
             <p className="fade-up mt-6 max-w-xl text-lg text-slate-200" style={{ ["--d" as string]: "0.6s" }}>{s.heroText}</p>
             <div className="fade-up mt-8 flex flex-col gap-3 sm:flex-row" style={{ ["--d" as string]: "0.75s" }}>
-              <Link href="/zayavka" className="btn btn-light">Оставить заявку</Link>
+              <Link href="/zayavka" className="btn btn-accent">Оставить заявку <span aria-hidden className="ml-2">→</span></Link>
               <a href="#callback" className="btn border-2 border-white/80 text-white hover:bg-white/10 lg:hidden">Заказать звонок</a>
             </div>
             <ul className="fade-up mt-8 grid max-w-xl gap-x-6 gap-y-2 text-sm text-slate-200 sm:grid-cols-2" style={{ ["--d" as string]: "0.9s" }}>
@@ -239,7 +223,7 @@ export default async function Home() {
       <section className="container-x mt-24">
         <Reveal>
           <div className="cta-band relative overflow-hidden rounded-3xl p-8 text-white sm:p-14">
-            <svg aria-hidden viewBox="0 0 100 100" className="floaty absolute -right-10 -top-10 h-64 w-64 text-white/[.07]" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"><path d="M50 5v90M10 27.5l80 45M10 72.5l80-45" /><circle cx="50" cy="50" r="12" /></svg>
+            <SnowField count={18} id="sf-cta" />
             <h2 className="relative max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">Оставьте заявку — свяжемся и уточним детали</h2>
             <p className="relative mt-3 max-w-xl text-slate-200">Заполнение занимает 1–3 минуты. Стоимость обсуждаем после уточнения деталей и готовим индивидуальное предложение.</p>
             <Link href="/zayavka" className="btn btn-light relative mt-7">Оставить заявку</Link>

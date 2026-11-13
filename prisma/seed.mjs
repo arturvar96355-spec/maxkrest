@@ -10,6 +10,8 @@ const steps = defaults.steps.map((a) => [a.title, a.text]);
 
 async function main() {
   await db.siteSettings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } });
+  // Название утверждено заказчиком: Royal Snow (меняем только прежнее временное значение)
+  await db.siteSettings.updateMany({ where: { id: 1, companyName: "Снегоуборка" }, data: { companyName: "Royal Snow", logoText: "Royal Snow" } });
   if ((await db.service.count()) === 0)
     await db.service.createMany({ data: services.map((s, i) => ({ ...s, sort: i })) });
   if ((await db.advantage.count()) === 0)

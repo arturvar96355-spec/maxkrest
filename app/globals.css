@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: #0b2545;
+  --color-navy: #0a2142;
   --color-navy-700: #13386b;
   --color-graphite: #2b2f36;
   --color-ice: #3b9ae1;
+  --color-accent: #2f7df6;
   --color-ice-50: #eef6fd;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -27,10 +28,6 @@ body { @apply bg-white text-graphite antialiased; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
-/* Лёгкий снегопад в первом экране (только CSS, отключается при reduce-motion) */
-@keyframes snowfall { from { transform: translate3d(0, -10%, 0); opacity: 0; } 10% { opacity: .7; } to { transform: translate3d(var(--drift, 20px), 110vh, 0); opacity: 0; } }
-.snow { position: absolute; top: 0; width: 6px; height: 6px; border-radius: 9999px; background: #fff; animation: snowfall var(--dur, 12s) linear infinite; animation-delay: var(--delay, 0s); pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .snow { display: none; } }
 
 /* ===== Движение и декор (строго, но живо) ===== */
 @theme { --color-navy-900: #061a33; }
@@ -71,3 +68,28 @@ body { @apply bg-white text-graphite antialiased; }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track, .floaty, .cta-band { animation: none; }
 }
+
+/* ===== Падающие снежинки (настоящие снежинки, один цвет, 3 слоя глубины) ===== */
+.snowfield { position: absolute; inset: 0; overflow: hidden; pointer-events: none; container-type: size; }
+@keyframes flakeFall { from { transform: translate3d(0, -40px, 0); } to { transform: translate3d(0, calc(100cqh + 40px), 0); } }
+@keyframes flakeSway { from { transform: translateX(calc(var(--sway, 20px) * -1)); } to { transform: translateX(var(--sway, 20px)); } }
+@keyframes flakeSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.flake { position: absolute; top: 0; width: var(--s, 12px); height: var(--s, 12px); opacity: var(--o, .6); color: #fff; animation: flakeFall var(--dur, 16s) linear infinite; animation-delay: var(--delay, 0s); will-change: transform; }
+.flake > i { display: block; width: 100%; height: 100%; animation: flakeSway var(--sw, 4s) ease-in-out infinite alternate; }
+.flake svg { width: 100%; height: 100%; animation: flakeSpin var(--spin, 20s) linear infinite; }
+@media (max-width: 640px) { .flake:nth-child(n+19) { display: none; } }
+@media (prefers-reduced-motion: reduce) { .flake, .flake > i, .flake svg { animation: none; } .flake { top: var(--y, 20%); } }
+
+/* Сцены с техникой */
+@keyframes drive { from { transform: translateX(-420px); } to { transform: translateX(1560px); } }
+.drive { animation: drive var(--drive-dur, 34s) linear infinite; }
+@keyframes puff { 0% { opacity: 0; transform: translate(0, 0) scale(.4); } 30% { opacity: .5; } 100% { opacity: 0; transform: translate(-40px, -34px) scale(1.4); } }
+.puff { animation: puff 2.4s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes drip { 0%, 70% { transform: translateY(0); opacity: .9; } 100% { transform: translateY(18px); opacity: 0; } }
+.drip { animation: drip 3.2s ease-in infinite; }
+@media (prefers-reduced-motion: reduce) { .drive { animation: none; transform: translateX(520px); } .puff, .drip { animation: none; } }
+
+.btn-accent { background: var(--color-accent); color: #fff; position: relative; overflow: hidden; }
+.btn-accent:hover { background: #2569d6; }
+.btn-accent::after { content: ""; position: absolute; inset: 0; transform: translateX(-120%); background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%); transition: transform .7s; }
+.btn-accent:hover::after { transform: translateX(120%); }
