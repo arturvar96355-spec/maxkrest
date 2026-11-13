@@ -102,3 +102,18 @@ test("мобильное меню открывается и ведёт по ра
   await page.getByRole("link", { name: "Услуги" }).first().click();
   await expect(page).toHaveURL(/\/uslugi$/);
 });
+
+test("фоновое видео играет и плавно проявляется", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("video.hero-video")).toHaveAttribute("data-playing", "1", { timeout: 10_000 });
+  await expect(page.locator("video.hero-video")).toHaveCSS("opacity", "1", { timeout: 5_000 });
+});
+
+test("если видео не может играть (энергосбережение/блокировка) — остаётся статичная картинка без кнопки play", async ({ page }) => {
+  await page.route(/\/hero\/hero\.(webm|mp4)/, (r) => r.abort());
+  await page.goto("/");
+  await page.waitForTimeout(2500);
+  await expect(page.locator("video.hero-video")).toHaveAttribute("data-playing", "0");
+  await expect(page.locator("video.hero-video")).toHaveCSS("opacity", "0");
+  await expect(page.locator('img[src="/hero/hero-poster.jpg"]')).toBeVisible();
+});

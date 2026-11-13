@@ -9,6 +9,7 @@ import { ServiceIcon } from "@/components/ServiceIcon";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { Timeline } from "@/components/Timeline";
 import { SnowField } from "@/components/SnowField";
+import { HeroVideo } from "@/components/HeroVideo";
 import { telHref } from "@/components/SiteChrome";
 
 export const dynamic = "force-dynamic";
@@ -105,10 +106,7 @@ export default async function Home() {
         <div aria-hidden className="relative -mb-32 -mt-44 aspect-[3/4] overflow-hidden sm:-mt-40 sm:aspect-[16/10] [-webkit-mask-image:linear-gradient(to_bottom,transparent,#000_30%,#000_70%,transparent)] [mask-image:linear-gradient(to_bottom,transparent,#000_30%,#000_70%,transparent)] lg:[-webkit-mask-image:none] lg:[mask-image:none] lg:absolute lg:inset-0 lg:z-0 lg:m-0 lg:aspect-auto">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/hero/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-[80%_50%] lg:object-[72%_50%]" fetchPriority="high" />
-          <video className="hero-video absolute inset-0 h-full w-full object-cover object-[80%_50%] lg:object-[72%_50%]" autoPlay muted loop playsInline preload="auto" poster="/hero/hero-poster.jpg">
-            <source src="/hero/hero.webm" type="video/webm" />
-            <source src="/hero/hero.mp4" type="video/mp4" />
-          </video>
+          <HeroVideo poster="/hero/hero-poster.jpg" webm="/hero/hero.webm" mp4="/hero/hero.mp4" className="absolute inset-0 h-full w-full object-cover object-[80%_50%] lg:object-[72%_50%]" />
           <div className="absolute inset-0 lg:bg-gradient-to-r lg:from-navy-900 lg:from-30% lg:via-navy-900/65 lg:via-52% lg:to-navy-900/10" />
           <div className="absolute inset-x-0 bottom-0 hidden h-1/3 bg-gradient-to-t from-navy-900 to-transparent lg:block" />
         </div>
