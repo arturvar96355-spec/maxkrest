@@ -93,3 +93,5 @@ body { @apply bg-white text-graphite antialiased; }
 .btn-accent:hover { background: #2569d6; }
 .btn-accent::after { content: ""; position: absolute; inset: 0; transform: translateX(-120%); background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%); transition: transform .7s; }
 .btn-accent:hover::after { transform: translateX(120%); }
+
+@media (prefers-reduced-motion: reduce) { .hero-video { display: none; } }

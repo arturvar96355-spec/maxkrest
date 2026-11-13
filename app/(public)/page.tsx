@@ -8,7 +8,6 @@ import { CallbackForm } from "@/components/CallbackForm";
 import { ServiceIcon } from "@/components/ServiceIcon";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { Timeline } from "@/components/Timeline";
-import { Scene } from "@/components/Scene";
 import { SnowField } from "@/components/SnowField";
 import { telHref } from "@/components/SiteChrome";
 
@@ -69,43 +68,59 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
 
       {/* ===== Первый экран ===== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-navy-900 via-navy to-navy-700 text-white">
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-40 h-[34rem] w-[34rem] rounded-full bg-accent/15 blur-3xl" />
-        <Scene kind="mechanized" className="opacity-80" />
-        <SnowField count={46} id="sf-home" />
-        <div className="container-x relative grid gap-12 pb-28 pt-14 md:pt-20 lg:grid-cols-[1.25fr_1fr] lg:items-center lg:pb-36">
-          <div>
-            <p className="fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm" style={{ ["--d" as string]: "0s" }}>
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-ice" />{s.region}
+      <section className="relative overflow-hidden bg-navy-900 text-white">
+        {/* текст */}
+        <div className="container-x relative z-10 pt-14 md:pt-20">
+          <div className="max-w-xl lg:max-w-[34rem]">
+            <p className="fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm backdrop-blur" style={{ ["--d" as string]: "0s" }}>
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" />{s.region}
             </p>
-            <h1 className="max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+            <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
               {words.map((w, i) => (
                 <span key={i}>
                   <span className="hero-word"><span className={accentFrom >= 0 && i >= accentFrom ? "text-[#4d94ff]" : undefined} style={{ ["--d" as string]: `${0.12 + i * 0.08}s` }}>{w}</span></span>{" "}
                 </span>
               ))}
             </h1>
-            <p className="fade-up mt-6 max-w-xl text-lg text-slate-200" style={{ ["--d" as string]: "0.6s" }}>{s.heroText}</p>
+            <p className="fade-up mt-6 text-lg text-slate-200" style={{ ["--d" as string]: "0.6s" }}>{s.heroText}</p>
             <div className="fade-up mt-8 flex flex-col gap-3 sm:flex-row" style={{ ["--d" as string]: "0.75s" }}>
               <Link href="/zayavka" className="btn btn-accent">Оставить заявку <span aria-hidden className="ml-2">→</span></Link>
-              <a href="#callback" className="btn border-2 border-white/80 text-white hover:bg-white/10 lg:hidden">Заказать звонок</a>
+              <TrackedLink goal="phone_click" href={telHref(s.phone)} className="btn border-2 border-white/70 text-white hover:bg-white/10">{s.phone}</TrackedLink>
             </div>
-            <ul className="fade-up mt-8 grid max-w-xl gap-x-6 gap-y-2 text-sm text-slate-200 sm:grid-cols-2" style={{ ["--d" as string]: "0.9s" }}>
+            <ul className="fade-up mt-7 grid gap-x-6 gap-y-2 text-sm text-slate-200 sm:grid-cols-2" style={{ ["--d" as string]: "0.9s" }}>
               {["Частные клиенты и организации", "Вручную и техникой", "Условия — после уточнения деталей", "Заявка с фото за 1–3 минуты"].map((t) => (
-                <li key={t} className="flex items-center gap-2"><span aria-hidden className="text-ice">✓</span>{t}</li>
+                <li key={t} className="flex items-center gap-2"><span aria-hidden className="text-accent">✓</span>{t}</li>
               ))}
             </ul>
-            <div className="fade-up mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm" style={{ ["--d" as string]: "1s" }}>
-              <TrackedLink goal="phone_click" href={telHref(s.phone)} className="text-xl font-semibold">{s.phone}</TrackedLink>
-              {s.telegramUrl && <TrackedLink goal="messenger_click" href={s.telegramUrl} target="_blank" rel="noopener" className="underline">Telegram</TrackedLink>}
-              {s.whatsappUrl && <TrackedLink goal="messenger_click" href={s.whatsappUrl} target="_blank" rel="noopener" className="underline">WhatsApp</TrackedLink>}
-            </div>
+            {(s.telegramUrl || s.whatsappUrl) && (
+              <div className="fade-up mt-5 flex gap-5 text-sm" style={{ ["--d" as string]: "1s" }}>
+                {s.telegramUrl && <TrackedLink goal="messenger_click" href={s.telegramUrl} target="_blank" rel="noopener" className="underline">Telegram</TrackedLink>}
+                {s.whatsappUrl && <TrackedLink goal="messenger_click" href={s.whatsappUrl} target="_blank" rel="noopener" className="underline">WhatsApp</TrackedLink>}
+              </div>
+            )}
           </div>
-          <div id="callback" className="fade-up scroll-mt-24" style={{ ["--d" as string]: "0.5s" }}><CallbackForm dark /></div>
+        </div>
+
+        {/* фон: зацикленное видео (на телефоне — карточка между текстом и формой; на reduce-motion — постер) */}
+        <div aria-hidden className="relative mx-4 mt-8 aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 sm:mx-6 sm:aspect-[16/10] lg:absolute lg:inset-0 lg:z-0 lg:m-0 lg:aspect-auto lg:rounded-none lg:border-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-[80%_50%] lg:object-[72%_50%]" fetchPriority="high" />
+          <video className="hero-video absolute inset-0 h-full w-full object-cover object-[80%_50%] lg:object-[72%_50%]" autoPlay muted loop playsInline preload="auto" poster="/hero/hero-poster.jpg">
+            <source src="/hero/hero.webm" type="video/webm" />
+            <source src="/hero/hero.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-navy-900 lg:from-30% lg:via-navy-900/65 lg:via-52% lg:to-navy-900/10" />
+          <div className="absolute inset-x-0 bottom-0 hidden h-1/3 bg-gradient-to-t from-navy-900 to-transparent lg:block" />
+        </div>
+        <SnowField count={42} id="sf-home" />
+
+        {/* форма звонка */}
+        <div className="container-x relative z-10 pb-24 pt-8 lg:pb-28 lg:pt-14">
+          <div id="callback" className="fade-up scroll-mt-24 lg:mt-6" style={{ ["--d" as string]: "0.7s" }}><CallbackForm variant="bar" /></div>
         </div>
 
         {/* «сугроб» на стыке с белым блоком */}
-        <svg aria-hidden viewBox="0 0 1440 90" preserveAspectRatio="none" className="absolute inset-x-0 bottom-[-1px] h-14 w-full text-white sm:h-20">
+        <svg aria-hidden viewBox="0 0 1440 90" preserveAspectRatio="none" className="absolute inset-x-0 bottom-[-1px] z-10 h-12 w-full text-white sm:h-16">
           <path fill="currentColor" d="M0 90V52c120 26 230 30 360 10 150-24 260-48 430-30 150 16 240 44 380 38 110-5 190-26 270-44v64Z" />
         </svg>
       </section>
