@@ -102,14 +102,14 @@ export default async function Home() {
         </div>
 
         {/* фон: зацикленное видео (на телефоне — карточка между текстом и формой; на reduce-motion — постер) */}
-        <div aria-hidden className="relative mx-4 mt-8 aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 sm:mx-6 sm:aspect-[16/10] lg:absolute lg:inset-0 lg:z-0 lg:m-0 lg:aspect-auto lg:rounded-none lg:border-0">
+        <div aria-hidden className="relative -mb-32 -mt-44 aspect-[3/4] overflow-hidden sm:-mt-40 sm:aspect-[16/10] [-webkit-mask-image:linear-gradient(to_bottom,transparent,#000_30%,#000_70%,transparent)] [mask-image:linear-gradient(to_bottom,transparent,#000_30%,#000_70%,transparent)] lg:[-webkit-mask-image:none] lg:[mask-image:none] lg:absolute lg:inset-0 lg:z-0 lg:m-0 lg:aspect-auto">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/hero/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-[80%_50%] lg:object-[72%_50%]" fetchPriority="high" />
           <video className="hero-video absolute inset-0 h-full w-full object-cover object-[80%_50%] lg:object-[72%_50%]" autoPlay muted loop playsInline preload="auto" poster="/hero/hero-poster.jpg">
             <source src="/hero/hero.webm" type="video/webm" />
             <source src="/hero/hero.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-navy-900 lg:from-30% lg:via-navy-900/65 lg:via-52% lg:to-navy-900/10" />
+          <div className="absolute inset-0 lg:bg-gradient-to-r lg:from-navy-900 lg:from-30% lg:via-navy-900/65 lg:via-52% lg:to-navy-900/10" />
           <div className="absolute inset-x-0 bottom-0 hidden h-1/3 bg-gradient-to-t from-navy-900 to-transparent lg:block" />
         </div>
         <SnowField count={42} id="sf-home" />

@@ -13,19 +13,19 @@ export function Header({ s }: { s: SiteSettings }) {
     <header id="site-header" className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <HeaderScroll />
       <div className="container-x flex min-h-16 items-center justify-between gap-3">
-        <Link href="/" className="flex items-center gap-2 text-lg font-bold text-navy">
+        <Link href="/" className="flex items-center gap-2 whitespace-nowrap text-lg font-bold text-navy">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {s.logoUrl ? <img src={s.logoUrl} alt={s.companyName} className="h-9 w-auto" /> : <span aria-hidden className="grid h-10 w-10 place-items-center rounded-lg bg-navy text-white"><LogoMark className="h-7 w-7" /></span>}
           <span>{s.logoText}</span>
         </Link>
-        <nav aria-label="Основная" className="hidden gap-6 text-sm font-medium md:flex">
+        <nav aria-label="Основная" className="hidden gap-6 whitespace-nowrap text-sm font-medium md:flex">
           <Link href="/uslugi" className="hover:text-ice">Услуги</Link>
           <Link href="/#how" className="hover:text-ice">Как мы работаем</Link>
           <Link href="/kontakty" className="hover:text-ice">Контакты</Link>
         </nav>
         <div className="flex items-center gap-3">
-          <TrackedLink goal="phone_click" href={telHref(s.phone)} className="hidden text-sm font-semibold text-navy sm:block">{s.phone}</TrackedLink>
-          <div className="hidden md:block"><Link href="/zayavka" className="btn btn-primary !min-h-10 !px-4 !py-2 text-sm">Оставить заявку</Link></div>
+          <TrackedLink goal="phone_click" href={telHref(s.phone)} className="hidden whitespace-nowrap text-sm font-semibold text-navy lg:block">{s.phone}</TrackedLink>
+          <div className="hidden md:block"><Link href="/zayavka" className="btn btn-primary whitespace-nowrap !min-h-10 !px-4 !py-2 text-sm">Оставить заявку</Link></div>
           <MobileNav />
         </div>
       </div>
