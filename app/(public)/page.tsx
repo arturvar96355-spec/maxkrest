@@ -249,8 +249,9 @@ export default async function Home() {
         <Section n={reviews.length > 0 ? "06" : photos.length > 0 ? "06" : "05"} label="Как связаться" title="Контакты и география работы">
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             <div data-reveal className="rounded-2xl border border-slate-200 p-6">
-              <p className="text-sm text-slate-500">Телефон</p>
+              <p className="text-sm text-slate-500">{s.extraPhones.length ? "Телефоны" : "Телефон"}</p>
               <TrackedLink goal="phone_click" href={telHref(s.phone)} className="mt-1 block text-2xl font-semibold text-navy">{s.phone}</TrackedLink>
+              {s.extraPhones.map((p) => <TrackedLink key={p} goal="phone_click" href={telHref(p)} className="mt-1 block text-xl font-semibold text-navy">{p}</TrackedLink>)}
               {s.email && <a href={`mailto:${s.email}`} className="mt-2 block text-sm underline">{s.email}</a>}
             </div>
             <div data-reveal className="rounded-2xl border border-slate-200 p-6">

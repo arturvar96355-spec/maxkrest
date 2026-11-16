@@ -135,7 +135,8 @@ model SiteSettings {
   companyName   String  @default("Royal Snow")
   logoText      String  @default("Royal Snow")
   logoUrl       String?
-  phone         String  @default("+7 (000) 000-00-00")
+  phone         String   @default("+7 (991) 959-89-85")
+  extraPhones   String[] @default([])
   email         String?
   address       String?
   telegramUrl   String?

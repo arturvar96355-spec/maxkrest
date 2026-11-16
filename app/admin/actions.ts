@@ -77,6 +77,7 @@ export async function saveSettings(fd: FormData) {
     companyName: s(fd, "companyName") || "Снегоуборка",
     logoText: s(fd, "logoText") || "Снегоуборка",
     phone: s(fd, "phone"),
+    extraPhones: lines(s(fd, "extraPhones")),
     email: opt(fd, "email"),
     address: opt(fd, "address"),
     telegramUrl: opt(fd, "telegramUrl"),

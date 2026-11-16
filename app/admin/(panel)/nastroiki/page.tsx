@@ -20,7 +20,8 @@ export default async function Settings() {
           <input id="logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp" className="field" />
           {s.logoUrl && <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" name="removeLogo" className="h-5 w-5" /> Удалить текущий логотип</label>}
         </div>
-        <I n="phone" l="Телефон" v={s.phone} />
+        <I n="phone" l="Основной телефон" v={s.phone} />
+        <div><label className="label" htmlFor="extraPhones">Дополнительные телефоны (по одному в строке)</label><textarea id="extraPhones" name="extraPhones" rows={3} defaultValue={s.extraPhones.join("\n")} className="field" /></div>
         <I n="email" l="E-mail" v={s.email} t="email" />
         <I n="address" l="Адрес" v={s.address} />
         <I n="telegramUrl" l="Ссылка на Telegram (https://t.me/…)" v={s.telegramUrl} />

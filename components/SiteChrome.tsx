@@ -44,6 +44,7 @@ export function Footer({ s }: { s: SiteSettings }) {
         <div className="text-sm">
           <p className="mb-2 font-semibold text-white">Контакты</p>
           <TrackedLink goal="phone_click" href={telHref(s.phone)} className="block py-1">{s.phone}</TrackedLink>
+          {s.extraPhones.map((p) => <TrackedLink key={p} goal="phone_click" href={telHref(p)} className="block py-1">{p}</TrackedLink>)}
           {s.email && <a href={`mailto:${s.email}`} className="block py-1">{s.email}</a>}
           {s.telegramUrl && <TrackedLink goal="messenger_click" href={s.telegramUrl} target="_blank" rel="noopener" className="block py-1">Telegram</TrackedLink>}
           {s.whatsappUrl && <TrackedLink goal="messenger_click" href={s.whatsappUrl} target="_blank" rel="noopener" className="block py-1">WhatsApp</TrackedLink>}

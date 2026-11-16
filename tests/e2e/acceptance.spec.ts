@@ -117,3 +117,10 @@ test("если видео не может играть (энергосбереж
   await expect(page.locator("video.hero-video")).toHaveCSS("opacity", "0");
   await expect(page.locator('img[src="/hero/hero-poster.jpg"]')).toBeVisible();
 });
+
+test("в контактах указан телефон заказчика и ссылка tel: работает", async ({ page }) => {
+  await page.goto("/kontakty");
+  const link = page.getByRole("link", { name: "+7 (991) 959-89-85" }).first();
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute("href", "tel:+79919598985");
+});

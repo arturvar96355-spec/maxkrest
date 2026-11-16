@@ -14,7 +14,7 @@ export default async function Contacts() {
       <PageHero id="contacts" kind="commercial" compact title="Контакты" lead={s.region} />
       <div className="container-x py-10">
       <dl className=" space-y-3 text-lg">
-        <div><dt className="text-sm text-slate-500">Телефон</dt><dd><TrackedLink goal="phone_click" href={telHref(s.phone)} className="font-semibold text-navy">{s.phone}</TrackedLink></dd></div>
+        <div><dt className="text-sm text-slate-500">{s.extraPhones.length ? "Телефоны" : "Телефон"}</dt><dd className="flex flex-col">{[s.phone, ...s.extraPhones].map((p) => <TrackedLink key={p} goal="phone_click" href={telHref(p)} className="font-semibold text-navy">{p}</TrackedLink>)}</dd></div>
         {s.email && <div><dt className="text-sm text-slate-500">E-mail</dt><dd><a href={`mailto:${s.email}`}>{s.email}</a></dd></div>}
         {s.address && <div><dt className="text-sm text-slate-500">Адрес</dt><dd>{s.address}</dd></div>}
         <div><dt className="text-sm text-slate-500">География работы</dt><dd>{s.region}</dd></div>
