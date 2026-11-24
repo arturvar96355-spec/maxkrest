@@ -28,6 +28,8 @@ services:
       BOT_USERNAME: ${BOT_USERNAME:-}
       LEAD_PULL_SECRET: ${LEAD_PULL_SECRET:-}
       LEAD_NOTIFY_DIRECT: ${LEAD_NOTIFY_DIRECT:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       UPLOAD_DIR: /data/uploads
     volumes:
       - uploads:/data/uploads

@@ -1,5 +1,8 @@
 # Развёртывание (VPS в РФ, Ubuntu 22.04, Docker)
 
+Полный список передачи (домен, сервер, доступы, приёмка) — `docs/HANDOVER.md`.
+
+
 1. Установите Docker и Docker Compose, направьте A-запись домена на сервер.
 2. Склонируйте репозиторий, скопируйте `.env.example` в `.env`, задайте: `DB_PASSWORD`, `SITE_URL` (https://домен),
    `SITE_DOMAIN`, `AUTH_SECRET` и `CRON_SECRET` (`openssl rand -hex 32`), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
