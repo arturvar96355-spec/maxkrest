@@ -54,6 +54,7 @@ export function Footer({ s }: { s: SiteSettings }) {
           <Link href="/uslugi" className="block py-1">Услуги</Link>
           <Link href="/zayavka" className="block py-1">Оставить заявку</Link>
           <Link href="/politika-konfidencialnosti" className="block py-1">Политика конфиденциальности</Link>
+          <Link href="/soglasie" className="block py-1">Согласие на обработку данных</Link>
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { SERVICE_CHOICES, FIELDS, ORDER_KINDS, CONTACT_METHODS, type FormKey, type FieldDef } from "@/lib/serviceFields";
 import { reachGoal } from "./goals";
@@ -37,12 +37,19 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<number | null>(null);
+  const [botLink, setBotLink] = useState<string | null>(null);
   const [startedAt] = useState(() => Date.now());
   const [idemKey] = useState(() => crypto.randomUUID());
 
   const setField = (k: keyof typeof f, v: string | boolean) => setF((p) => ({ ...p, [k]: v }));
   const setParam = (s: FormKey, k: string, v: string) => setParams((p) => ({ ...p, [s]: { ...p[s], [k]: v } }));
   const toggle = (k: FormKey) => setServices((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]));
+  // После отправки ведём клиента в Telegram-бота (там он нажмёт «Старт» и заявка попадёт менеджеру)
+  useEffect(() => {
+    if (done === null || !botLink) return;
+    const t = setTimeout(() => window.location.assign(botLink), 1500);
+    return () => clearTimeout(t);
+  }, [done, botLink]);
   const labelOf = useMemo(() => Object.fromEntries(SERVICE_CHOICES.map((s) => [s.key, s.label])), []);
 
   function validate(s: number): boolean {
@@ -91,6 +98,7 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
       const j = await res.json();
       if (res.ok && j.ok) {
         reachGoal("lead_submit" as never);
+        setBotLink(typeof j.botLink === "string" ? j.botLink : null);
         setDone(j.number);
       } else {
         setErrors({ form: j.error ?? "Не удалось отправить заявку", ...(j.fields ?? {}) });
@@ -105,10 +113,18 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
   if (done !== null)
     return (
       <div role="status" className="rounded-2xl bg-ice-50 p-8 text-center">
-        <h2 className="text-2xl font-bold text-navy">Спасибо! Заявка отправлена.</h2>
+        <h2 className="text-2xl font-bold text-navy">{botLink ? "Заявка принята" : "Спасибо! Заявка отправлена."}</h2>
         {done > 0 && <p className="mt-3 text-lg">Номер вашей заявки: <b>№{done}</b></p>}
-        <p className="mt-3">Наш специалист свяжется с вами для уточнения деталей.</p>
-        <Link href="/" className="btn btn-primary mt-6">На главную</Link>
+        {botLink ? (
+          <>
+            <p className="mt-3">Открываем Telegram: нажмите «Старт» в боте, и менеджер ответит вам там.</p>
+            <a href={botLink} className="btn btn-accent mt-6">Открыть Telegram</a>
+            <p className="mt-4 text-sm text-slate-600">Если Telegram не открылся, нажмите кнопку выше. Мы также свяжемся с вами по указанному контакту.</p>
+          </>
+        ) : (
+          <p className="mt-3">Наш специалист свяжется с вами для уточнения деталей.</p>
+        )}
+        <Link href="/" className="btn btn-secondary mt-6">На главную</Link>
       </div>
     );
 
@@ -201,7 +217,7 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
           <div aria-hidden className="absolute -left-[9999px]"><label>Сайт<input tabIndex={-1} autoComplete="off" value={f.website} onChange={(e) => setField("website", e.target.value)} /></label></div>
           <label className="flex items-start gap-3 text-sm">
             <input type="checkbox" className="mt-1 h-5 w-5 shrink-0" checked={f.consent} onChange={(e) => setField("consent", e.target.checked)} />
-            <span>Я согласен(на) на обработку персональных данных и ознакомлен(а) с <Link href="/politika-konfidencialnosti" target="_blank" className="underline">политикой обработки персональных данных</Link>.</span>
+            <span>Я даю <Link href="/soglasie" target="_blank" className="underline">согласие на обработку персональных данных</Link> и ознакомлен(а) с <Link href="/politika-konfidencialnosti" target="_blank" className="underline">политикой обработки персональных данных</Link>.</span>
           </label>
           {errors.consent && <p role="alert" className="text-sm text-red-700">{errors.consent}</p>}
         </div>

@@ -25,6 +25,9 @@ services:
       CRON_SECRET: ${CRON_SECRET:?задайте CRON_SECRET}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      BOT_USERNAME: ${BOT_USERNAME:-}
+      LEAD_PULL_SECRET: ${LEAD_PULL_SECRET:-}
+      LEAD_NOTIFY_DIRECT: ${LEAD_NOTIFY_DIRECT:-}
       UPLOAD_DIR: /data/uploads
     volumes:
       - uploads:/data/uploads

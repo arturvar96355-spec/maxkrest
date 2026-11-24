@@ -36,6 +36,11 @@ const BACKOFF_MIN = [1, 5, 15, 60, 180, 720];
 export async function notifyLead(leadId: string): Promise<boolean> {
   const lead = await db.lead.findUnique({ where: { id: leadId } });
   if (!lead || lead.notifyState === "SENT") return true;
+  // LEAD_NOTIFY_DIRECT=off — уведомляет только бот-посредник (заявка попадёт в тему, когда клиент нажмёт «Старт»)
+  if (process.env.LEAD_NOTIFY_DIRECT === "off") {
+    await db.lead.update({ where: { id: leadId }, data: { notifyState: "SENT", notifyError: null } });
+    return true;
+  }
   const settings = await db.siteSettings.findUnique({ where: { id: 1 } });
   try {
     await sendTelegram(buildMessage(lead), settings?.tgChatId);

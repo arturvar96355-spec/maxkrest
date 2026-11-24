@@ -4,6 +4,7 @@ import { leadSchema, sanitizeParams } from "@/lib/validation/lead";
 import { hit, clientIp } from "@/lib/rateLimit";
 import { saveImage, MAX_FILES } from "@/lib/uploads";
 import { notifyLead } from "@/lib/telegram";
+import { botLinkFor } from "@/lib/leadToken";
 import type { FormKey } from "@/lib/serviceFields";
 
 export const runtime = "nodejs";
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
 
   // Идемпотентность: повторная отправка того же ключа возвращает прежний номер
   const existing = await db.lead.findUnique({ where: { idempotencyKey: d.idempotencyKey } });
-  if (existing) return NextResponse.json({ ok: true, number: existing.number });
+  if (existing) return NextResponse.json({ ok: true, number: existing.number, botLink: botLinkFor(existing.number) });
 
   const files = form.getAll("files").filter((f): f is File => f instanceof File && f.size > 0).slice(0, MAX_FILES);
   const saved: { storedAs: string; mime: string; size: number; origName: string }[] = [];
@@ -89,5 +90,5 @@ export async function POST(req: Request) {
     await notifyLead(lead.id).catch(() => {});
   });
 
-  return NextResponse.json({ ok: true, number: lead.number });
+  return NextResponse.json({ ok: true, number: lead.number, botLink: botLinkFor(lead.number) });
 }

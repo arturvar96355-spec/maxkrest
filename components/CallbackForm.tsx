@@ -15,6 +15,7 @@ export function CallbackForm({ variant = "card" }: { variant?: "card" | "bar" })
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<number | null>(null);
+  const [botLink, setBotLink] = useState<string | null>(null);
   const [startedAt] = useState(() => Date.now());
   const [key] = useState(() => crypto.randomUUID());
   const bar = variant === "bar";
@@ -35,7 +36,7 @@ export function CallbackForm({ variant = "card" }: { variant?: "card" | "bar" })
     try {
       const r = await fetch("/api/leads", { method: "POST", body: fd });
       const j = await r.json();
-      if (r.ok && j.ok) { reachGoal("lead_submit"); setDone(j.number); }
+      if (r.ok && j.ok) { reachGoal("lead_submit"); setBotLink(typeof j.botLink === "string" ? j.botLink : null); setDone(j.number); }
       else setErr(j.fields?.phone ?? j.error ?? "Не удалось отправить");
     } catch {
       setErr("Нет соединения. Повторите попытку.");
@@ -51,6 +52,7 @@ export function CallbackForm({ variant = "card" }: { variant?: "card" | "bar" })
         <p className={`text-xl font-bold ${bar ? "text-white" : "text-navy"}`}>Спасибо! Мы перезвоним.</p>
         {done > 0 && <p className="mt-1">Заявка №{done}</p>}
         <p className={`mt-2 text-sm ${bar ? "text-slate-300" : "text-slate-600"}`}>Наш специалист свяжется с вами для уточнения деталей.</p>
+        {botLink && <a href={botLink} className="btn btn-accent mt-4">Продолжить в Telegram</a>}
       </div>
     );
 
@@ -63,7 +65,7 @@ export function CallbackForm({ variant = "card" }: { variant?: "card" | "bar" })
   const consentField = (
     <label className={`flex items-start gap-2 text-xs ${bar ? "text-slate-300" : "text-slate-600"}`}>
       <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-      <span>Согласен(на) на обработку персональных данных, <Link href="/politika-konfidencialnosti" target="_blank" className="underline">политика</Link>.</span>
+      <span>Даю <Link href="/soglasie" target="_blank" className="underline">согласие на обработку персональных данных</Link>, <Link href="/politika-konfidencialnosti" target="_blank" className="underline">политика</Link>.</span>
     </label>
   );
 

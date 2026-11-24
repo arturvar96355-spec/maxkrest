@@ -47,7 +47,7 @@ test("заявка с фото сохраняется, видна в админ�
   await page.getByRole("button", { name: "Далее" }).click();
   await page.fill("#name", "Тест Е2Е");
   await page.fill("#phone", "89005550123");
-  await page.getByRole("checkbox", { name: /согласен/ }).check();
+  await page.getByRole("checkbox", { name: /согласие/i }).check();
   await page.waitForTimeout(3200); // антиспам: минимальное время заполнения
   await page.getByRole("button", { name: "Отправить заявку" }).click();
   const status = page.getByRole("status");
@@ -90,7 +90,7 @@ test("быстрая форма «Заказать звонок» на глав�
   await page.goto("/");
   await page.fill("#cb-name", "Звонок Е2Е");
   await page.fill("#cb-phone", "89005550999");
-  await page.getByRole("checkbox", { name: /Согласен/ }).check();
+  await page.getByRole("checkbox", { name: /согласие/i }).check();
   await page.waitForTimeout(3200); // антиспам: минимальное время заполнения
   await page.getByRole("button", { name: "Перезвоните мне" }).click();
   await expect(page.getByRole("status")).toContainText("Мы перезвоним");
@@ -123,4 +123,31 @@ test("в контактах указан телефон заказчика и с
   const link = page.getByRole("link", { name: "+7 (991) 959-89-85" }).first();
   await expect(link).toBeVisible();
   await expect(link).toHaveAttribute("href", "tel:+79919598985");
+});
+
+test("после отправки формы с ботом: «Заявка принята», кнопка и переход в Telegram", async ({ page }) => {
+  const link = "https://t.me/royal_snow_bot?start=lead_7_AAAAAAAAAAAA";
+  await page.route("**/api/leads", (r) => r.fulfill({ json: { ok: true, number: 7, botLink: link } }));
+  let opened = false;
+  await page.route("https://t.me/**", (r) => { opened = true; return r.abort(); });
+  await page.goto("/zayavka?service=removal");
+  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Далее" }).click();
+  await page.fill("#name", "Бот Тест");
+  await page.fill("#phone", "89005550777");
+  await page.getByRole("checkbox", { name: /согласие/i }).check();
+  await page.waitForTimeout(3200);
+  await page.getByRole("button", { name: "Отправить заявку" }).click();
+  const status = page.getByRole("status");
+  await expect(status).toContainText("Заявка принята");
+  await expect(status).toContainText("№7");
+  await expect(page.getByRole("link", { name: "Открыть Telegram" })).toHaveAttribute("href", link);
+  await expect.poll(() => opened, { timeout: 5000 }).toBe(true); // автоматический переход через ~1,5 с
+});
+
+test("страница согласия существует и чекбокс формы ссылается на неё", async ({ page }) => {
+  expect((await page.goto("/soglasie"))?.status()).toBe(200);
+  await page.goto("/zayavka?service=removal");
+  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Далее" }).click();
+  await expect(page.getByRole("checkbox", { name: /согласие/i })).not.toBeChecked(); // по умолчанию не отмечен
+  await expect(page.getByRole("link", { name: "согласие на обработку персональных данных" })).toHaveAttribute("href", "/soglasie");
 });
