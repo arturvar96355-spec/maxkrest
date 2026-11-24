@@ -9,7 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(siteUrl()),
     title: { default: `${s.heroTitle} — ${s.companyName}`, template: `%s — ${s.companyName}` },
     description: s.heroText,
-    openGraph: { type: "website", locale: "ru_RU", siteName: s.companyName },
+    openGraph: { type: "website", locale: "ru_RU", siteName: s.companyName, images: [{ url: "/hero/hero-poster.jpg", width: 1080, height: 1006, alt: s.heroTitle }] },
+    twitter: { card: "summary_large_image", images: ["/hero/hero-poster.jpg"] },
   };
 }
 

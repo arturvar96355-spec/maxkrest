@@ -3,12 +3,15 @@ import { TrackedLink } from "./TrackedLink";
 import { MobileNav } from "./MobileNav";
 import { HeaderScroll } from "./HeaderScroll";
 import { LogoMark } from "./LogoMark";
+import { ServiceIcon } from "./ServiceIcon";
 import { formatPhone } from "@/lib/phone";
 import type { SiteSettings } from "@prisma/client";
 
+export type NavService = { slug: string; title: string; formKey: string };
+
 const telHref = (p: string) => "tel:+" + p.replace(/\D/g, "").replace(/^8/, "7");
 
-export function Header({ s }: { s: SiteSettings }) {
+export function Header({ s, services = [] }: { s: SiteSettings; services?: NavService[] }) {
   return (
     <header id="site-header" className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <HeaderScroll />
@@ -18,29 +21,55 @@ export function Header({ s }: { s: SiteSettings }) {
           {s.logoUrl ? <img src={s.logoUrl} alt={s.companyName} className="h-9 w-auto" /> : <span aria-hidden className="grid h-10 w-10 place-items-center rounded-lg bg-navy text-white"><LogoMark className="h-7 w-7" /></span>}
           <span>{s.logoText}</span>
         </Link>
-        <nav aria-label="Основная" className="hidden gap-6 whitespace-nowrap text-sm font-medium md:flex">
-          <Link href="/uslugi" className="hover:text-ice">Услуги</Link>
-          <Link href="/#how" className="hover:text-ice">Как мы работаем</Link>
-          <Link href="/kontakty" className="hover:text-ice">Контакты</Link>
+        <nav aria-label="Основная" className="hidden items-center gap-7 whitespace-nowrap text-sm font-medium md:flex">
+          <div className="menu-group relative">
+            <Link href="/uslugi" className="nav-link inline-flex items-center gap-1">
+              Услуги
+              <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+            </Link>
+            {services.length > 0 && (
+              <div className="menu-panel absolute left-1/2 top-full z-40 w-[23rem] -translate-x-1/2 pt-3">
+                <ul className="rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+                  {services.map((sv) => (
+                    <li key={sv.slug}>
+                      <Link href={`/uslugi/${sv.slug}`} className="flex items-center gap-3 whitespace-normal rounded-lg px-3 py-2 text-sm hover:bg-ice-50">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-ice-50 text-navy"><ServiceIcon name={sv.formKey} className="h-5 w-5" /></span>
+                        {sv.title}
+                      </Link>
+                    </li>
+                  ))}
+                  <li className="mt-1 border-t border-slate-100 pt-1"><Link href="/uslugi" className="block rounded-lg px-3 py-2 text-sm font-semibold text-ice hover:bg-ice-50">Все услуги →</Link></li>
+                </ul>
+              </div>
+            )}
+          </div>
+          <Link href="/#how" className="nav-link">Как мы работаем</Link>
+          <Link href="/kontakty" className="nav-link">Контакты</Link>
         </nav>
         <div className="flex items-center gap-3">
           <TrackedLink goal="phone_click" href={telHref(s.phone)} className="hidden whitespace-nowrap text-sm font-semibold text-navy lg:block">{s.phone}</TrackedLink>
           <div className="hidden md:block"><Link href="/zayavka" className="btn btn-primary whitespace-nowrap !min-h-10 !px-4 !py-2 text-sm">Оставить заявку</Link></div>
-          <MobileNav />
+          <MobileNav services={services} />
         </div>
       </div>
     </header>
   );
 }
 
-export function Footer({ s }: { s: SiteSettings }) {
+export function Footer({ s, services = [] }: { s: SiteSettings; services?: NavService[] }) {
   return (
     <footer className="mt-20 bg-graphite pb-20 text-slate-200 md:pb-0">
-      <div className="container-x grid gap-8 py-10 md:grid-cols-3">
+      <div className="container-x grid gap-8 py-10 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="text-lg font-bold text-white">{s.companyName}</p>
           <p className="mt-2 text-sm">{s.region}</p>
         </div>
+        {services.length > 0 && (
+          <div className="text-sm">
+            <p className="mb-2 font-semibold text-white">Услуги</p>
+            {services.map((sv) => <Link key={sv.slug} href={`/uslugi/${sv.slug}`} className="block py-1 hover:text-white">{sv.title}</Link>)}
+          </div>
+        )}
         <div className="text-sm">
           <p className="mb-2 font-semibold text-white">Контакты</p>
           <TrackedLink goal="phone_click" href={telHref(s.phone)} className="block py-1">{s.phone}</TrackedLink>

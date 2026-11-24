@@ -10,7 +10,7 @@ const links = [
 ];
 
 /** Меню для телефонов: кнопка-«бургер» и выезжающая панель. */
-export function MobileNav() {
+export function MobileNav({ services = [] }: { services?: { slug: string; title: string }[] }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -26,11 +26,18 @@ export function MobileNav() {
         </svg>
       </button>
       {open && (
-        <nav id="mobile-menu" aria-label="Мобильное меню" className="absolute inset-x-0 top-full z-20 border-b border-slate-200 bg-white p-4 shadow-lg">
+        <nav id="mobile-menu" aria-label="Мобильное меню" className="absolute inset-x-0 top-full z-20 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-slate-200 bg-white p-4 shadow-lg">
           <ul className="space-y-1">
             {links.map((l) => (
               <li key={l.href}>
                 <Link href={l.href} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-lg font-medium hover:bg-ice-50">{l.label}</Link>
+                {l.href === "/uslugi" && services.length > 0 && (
+                  <ul className="mb-1 ml-3 border-l border-slate-200 pl-3">
+                    {services.map((sv) => (
+                      <li key={sv.slug}><Link href={`/uslugi/${sv.slug}`} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2 text-base text-slate-700 hover:bg-ice-50">{sv.title}</Link></li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>

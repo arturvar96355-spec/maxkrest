@@ -1,10 +1,11 @@
 import { Header, Footer, telHref } from "@/components/SiteChrome";
 import { MobileBar } from "@/components/MobileBar";
 import { getSettings } from "@/lib/site";
-import { isDemo } from "@/lib/content";
+import { isDemo, getServices } from "@/lib/content";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const s = await getSettings();
+  const [s, services] = await Promise.all([getSettings(), getServices()]);
+  const nav = services.map((x) => ({ slug: x.slug, title: x.title, formKey: x.formKey }));
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:bg-white focus:p-2">К содержимому</a>
@@ -13,9 +14,9 @@ export default async function PublicLayout({ children }: { children: React.React
           Демо-режим: база данных не подключена или недоступна — показано типовое содержимое, заявки не сохраняются. См. docs/VERCEL.md.
         </div>
       )}
-      <Header s={s} />
+      <Header s={s} services={nav} />
       <main id="main">{children}</main>
-      <Footer s={s} />
+      <Footer s={s} services={nav} />
       <MobileBar phoneHref={telHref(s.phone)} />
     </>
   );

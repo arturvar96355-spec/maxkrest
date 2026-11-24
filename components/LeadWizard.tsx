@@ -113,6 +113,7 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
   if (done !== null)
     return (
       <div role="status" className="rounded-2xl bg-ice-50 p-8 text-center">
+        <svg aria-hidden viewBox="0 0 52 52" className="draw-check mx-auto mb-4 h-16 w-16 text-ice" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="26" cy="26" r="23" /><path d="m15 27 8 8 15-17" /></svg>
         <h2 className="text-2xl font-bold text-navy">{botLink ? "Заявка принята" : "Спасибо! Заявка отправлена."}</h2>
         {done > 0 && <p className="mt-3 text-lg">Номер вашей заявки: <b>№{done}</b></p>}
         {botLink ? (
@@ -140,7 +141,7 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
       </ol>
 
       {step === 0 && (
-        <fieldset>
+        <fieldset className="step-in">
           <legend className="mb-3 text-lg font-semibold">Что вам нужно? (можно выбрать несколько)</legend>
           <div className="grid gap-2">
             {SERVICE_CHOICES.map((s) => (
@@ -155,7 +156,7 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
       )}
 
       {step === 1 && (
-        <div className="space-y-8">
+        <div className="space-y-8 step-in">
           {services.map((s) => (
             <fieldset key={s} className="space-y-4">
               <legend className="mb-2 text-lg font-semibold text-navy">{labelOf[s]}</legend>
@@ -179,7 +180,7 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
       )}
 
       {step === 2 && (
-        <div className="space-y-4">
+        <div className="space-y-4 step-in">
           <Text id="city" label="Город / населённый пункт" value={f.city} onChange={(v) => setField("city", v)} autoComplete="address-level2" />
           <Text id="street" label="Улица, дом, корпус" value={f.street} onChange={(v) => setField("street", v)} autoComplete="street-address" />
           <div>
@@ -198,7 +199,7 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
       )}
 
       {step === 3 && (
-        <div className="space-y-4">
+        <div className="space-y-4 step-in">
           <Text id="name" label="Имя *" value={f.name} onChange={(v) => setField("name", v)} error={errors.name} autoComplete="name" />
           <Text id="phone" label="Телефон *" value={f.phone} onChange={(v) => setField("phone", formatPhoneInput(v))} error={errors.phone} type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (900) 000-00-00" />
           <Text id="org" label="Название организации" value={f.organization} onChange={(v) => setField("organization", v)} autoComplete="organization" />

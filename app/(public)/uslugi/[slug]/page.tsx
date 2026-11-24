@@ -28,6 +28,7 @@ export default async function ServicePage({ params }: P) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Главная", item: siteUrl() }, { "@type": "ListItem", position: 2, name: "Услуги", item: `${siteUrl()}/uslugi` }, { "@type": "ListItem", position: 3, name: s.title, item: `${siteUrl()}/uslugi/${s.slug}` }] }) }} />
       <PageHero
         id={`svc-${s.slug}`}
         kind={s.formKey}

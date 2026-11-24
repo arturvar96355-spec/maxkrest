@@ -25,7 +25,7 @@ export function PageHero({ title, lead, kind = "other", image, eyebrow, children
         {eyebrow && <div className="fade-up mb-3 text-sm text-slate-300" style={{ ["--d" as string]: "0s" }}>{eyebrow}</div>}
         <div className="flex items-start gap-4">
           {icon && <span className="fade-up grid h-14 w-14 shrink-0 place-items-center rounded-xl border border-white/15 bg-white/10 backdrop-blur" style={{ ["--d" as string]: "0.05s" }}>{icon}</span>}
-          <h1 className="fade-up max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl" style={{ ["--d" as string]: "0.1s" }}>{title}</h1>
+          <h1 className="fade-up min-w-0 max-w-3xl break-words text-[1.7rem] font-bold leading-tight tracking-tight [hyphens:auto] min-[400px]:text-3xl sm:text-5xl" style={{ ["--d" as string]: "0.1s" }}>{title}</h1>
         </div>
         {lead && <p className="fade-up mt-5 max-w-2xl text-lg text-slate-200" style={{ ["--d" as string]: "0.25s" }}>{lead}</p>}
         {children && <div className="fade-up mt-7" style={{ ["--d" as string]: "0.4s" }}>{children}</div>}

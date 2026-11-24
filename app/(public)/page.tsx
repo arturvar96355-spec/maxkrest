@@ -89,19 +89,18 @@ export default async function Home() {
             <p className="fade-up mt-6 text-lg text-slate-200" style={{ ["--d" as string]: "0.6s" }}>{s.heroText}</p>
             <div className="fade-up mt-8 flex flex-col gap-3 sm:flex-row" style={{ ["--d" as string]: "0.75s" }}>
               <Link href="/zayavka" className="btn btn-accent">Оставить заявку <span aria-hidden className="ml-2">→</span></Link>
-              <TrackedLink goal="phone_click" href={telHref(s.phone)} className="btn border-2 border-white/70 text-white hover:bg-white/10">{s.phone}</TrackedLink>
+              <a href="#callback" className="btn border-2 border-white/70 text-white hover:bg-white/10">Заказать звонок</a>
             </div>
             <ul className="fade-up mt-7 grid gap-x-6 gap-y-2 text-sm text-slate-200 sm:grid-cols-2" style={{ ["--d" as string]: "0.9s" }}>
               {["Частные клиенты и организации", "Вручную и техникой", "Условия — после уточнения деталей", "Заявка с фото за 1–3 минуты"].map((t) => (
                 <li key={t} className="flex items-center gap-2"><span aria-hidden className="text-accent">✓</span>{t}</li>
               ))}
             </ul>
-            {(s.telegramUrl || s.whatsappUrl) && (
-              <div className="fade-up mt-5 flex gap-5 text-sm" style={{ ["--d" as string]: "1s" }}>
-                {s.telegramUrl && <TrackedLink goal="messenger_click" href={s.telegramUrl} target="_blank" rel="noopener" className="underline">Telegram</TrackedLink>}
-                {s.whatsappUrl && <TrackedLink goal="messenger_click" href={s.whatsappUrl} target="_blank" rel="noopener" className="underline">WhatsApp</TrackedLink>}
-              </div>
-            )}
+            <div className="fade-up mt-5 flex flex-wrap items-center gap-x-6 gap-y-2" style={{ ["--d" as string]: "1s" }}>
+              <TrackedLink goal="phone_click" href={telHref(s.phone)} className="text-xl font-semibold">{s.phone}</TrackedLink>
+              {s.telegramUrl && <TrackedLink goal="messenger_click" href={s.telegramUrl} target="_blank" rel="noopener" className="text-sm underline">Telegram</TrackedLink>}
+              {s.whatsappUrl && <TrackedLink goal="messenger_click" href={s.whatsappUrl} target="_blank" rel="noopener" className="text-sm underline">WhatsApp</TrackedLink>}
+            </div>
           </div>
         </div>
 

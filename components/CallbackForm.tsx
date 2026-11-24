@@ -49,6 +49,7 @@ export function CallbackForm({ variant = "card" }: { variant?: "card" | "bar" })
   if (done !== null)
     return (
       <div role="status" className={wrap}>
+        <svg aria-hidden viewBox="0 0 52 52" className="draw-check mb-2 h-10 w-10 text-accent" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="26" cy="26" r="23" /><path d="m15 27 8 8 15-17" /></svg>
         <p className={`text-xl font-bold ${bar ? "text-white" : "text-navy"}`}>Спасибо! Мы перезвоним.</p>
         {done > 0 && <p className="mt-1">Заявка №{done}</p>}
         <p className={`mt-2 text-sm ${bar ? "text-slate-300" : "text-slate-600"}`}>Наш специалист свяжется с вами для уточнения деталей.</p>

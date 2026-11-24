@@ -151,3 +151,20 @@ test("страница согласия существует и чекбокс �
   await expect(page.getByRole("checkbox", { name: /согласие/i })).not.toBeChecked(); // по умолчанию не отмечен
   await expect(page.getByRole("link", { name: "согласие на обработку персональных данных" })).toHaveAttribute("href", "/soglasie");
 });
+
+test("на первом экране есть кнопки «Оставить заявку» и «Заказать звонок» (ТЗ п. 3.1)", async ({ page }) => {
+  await page.goto("/");
+  const hero = page.locator("section").first();
+  await expect(hero.getByRole("link", { name: /Оставить заявку/ })).toBeVisible();
+  const call = hero.getByRole("link", { name: "Заказать звонок" });
+  await expect(call).toBeVisible();
+  await call.click();
+  await expect(page.locator("#cb-phone")).toBeInViewport();
+});
+
+test("в подвале и мобильном меню есть ссылки на все услуги", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("footer").getByRole("link", { name: "Очистка крыши от снега и наледи" })).toBeVisible();
+  await page.getByRole("button", { name: "Открыть меню" }).click();
+  await expect(page.locator("#mobile-menu").getByRole("link", { name: "Вывоз снега" })).toBeVisible();
+});
