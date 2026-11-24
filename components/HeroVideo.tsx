@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
  * экономия трафика, reduce-motion): тогда остаётся статичный постер и никаких кнопок «play».
  * Видео показывается только после того, как реально началось воспроизведение.
  */
-export function HeroVideo({ poster, webm, mp4, className = "" }: { poster: string; webm: string; mp4: string; className?: string }) {
+export function HeroVideo({ webm, mp4, className = "" }: { webm: string; mp4: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -22,7 +22,9 @@ export function HeroVideo({ poster, webm, mp4, className = "" }: { poster: strin
     v.addEventListener("playing", onPlaying);
     v.addEventListener("pause", onStopped);
 
-    tryPlay();
+    // Запускаем после полной загрузки страницы, чтобы видео не конкурировало с отрисовкой первого экрана
+    const schedule = () => { if ("requestIdleCallback" in window) window.requestIdleCallback(tryPlay, { timeout: 2000 }); else setTimeout(tryPlay, 300); };
+    if (document.readyState === "complete") schedule(); else window.addEventListener("load", schedule, { once: true });
     // Если автозапуск запрещён — пробуем ещё раз при первом касании (жест пользователя это разрешает)
     const gesture = () => tryPlay();
     const events = ["touchend", "pointerup", "click", "keydown"] as const;
@@ -33,6 +35,7 @@ export function HeroVideo({ poster, webm, mp4, className = "" }: { poster: strin
     return () => {
       v.removeEventListener("playing", onPlaying);
       v.removeEventListener("pause", onStopped);
+      window.removeEventListener("load", schedule);
       events.forEach((e) => window.removeEventListener(e, gesture));
       document.removeEventListener("visibilitychange", onVisible);
     };
@@ -42,7 +45,7 @@ export function HeroVideo({ poster, webm, mp4, className = "" }: { poster: strin
     <video
       ref={ref}
       className={`hero-video transition-opacity duration-700 ${playing ? "opacity-100" : "opacity-0"} ${className}`}
-      autoPlay muted loop playsInline preload="auto" poster={poster}
+      muted loop playsInline preload="none"
       disablePictureInPicture disableRemotePlayback
       data-playing={playing ? "1" : "0"}
       aria-hidden tabIndex={-1}

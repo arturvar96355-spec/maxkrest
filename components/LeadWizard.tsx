@@ -135,7 +135,7 @@ export function LeadWizard({ initialService, callback, contactMethods = CONTACT_
       </div>
       <ol className="mb-6 flex gap-2" aria-label="Шаги заявки">
         {STEPS.map((s, i) => (
-          <li key={s} aria-current={i === step ? "step" : undefined} className={`flex-1 rounded-md px-2 py-1 text-center text-xs sm:text-sm ${i === step ? "bg-navy text-white" : i < step ? "bg-ice-50 text-navy" : "bg-slate-100 text-slate-500"}`}>{i + 1}. {s}</li>
+          <li key={s} aria-current={i === step ? "step" : undefined} className={`flex-1 rounded-md px-2 py-1 text-center text-xs sm:text-sm ${i === step ? "bg-navy text-white" : i < step ? "bg-ice-50 text-navy" : "bg-slate-100 text-slate-600"}`}>{i + 1}. {s}</li>
         ))}
       </ol>
 
