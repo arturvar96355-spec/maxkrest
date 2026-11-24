@@ -164,7 +164,7 @@ test("на первом экране есть кнопки «Оставить з
 
 test("в подвале и мобильном меню есть ссылки на все услуги", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("footer").getByRole("link", { name: "Очистка крыши от снега и наледи" })).toBeVisible();
+  await expect(page.locator("footer").getByRole("link", { name: "Очистка крыш от снега и наледи" })).toBeVisible();
   await page.getByRole("button", { name: "Открыть меню" }).click();
   await expect(page.locator("#mobile-menu").getByRole("link", { name: "Вывоз снега" })).toBeVisible();
 });
