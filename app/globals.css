@@ -123,3 +123,13 @@ body { @apply bg-white text-graphite antialiased; }
 .menu-panel { opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .2s, transform .2s, visibility .2s; }
 .menu-group:hover .menu-panel, .menu-group:focus-within .menu-panel { opacity: 1; visibility: visible; transform: none; }
 @media (prefers-reduced-motion: reduce) { .step-in, .draw-check { animation: none; } .draw-check circle, .draw-check path { animation: none; stroke-dashoffset: 0; } }
+
+/* ===== Плитки услуг, вариант «шахматка»: синий/белый по клеткам сетки ===== */
+.tiles .tile { --t-bg: #fff; --t-border: #e2e8f0; --t-title: var(--color-navy); --t-text: #475569; --t-ic-bg: var(--color-ice-50); --t-ic: var(--color-navy); --t-link: var(--color-ice); background: var(--t-bg); border: 1px solid var(--t-border); }
+.tiles .tile .t-title { color: var(--t-title); }
+.tiles .tile .t-text { color: var(--t-text); }
+.tiles .tile .t-icon { background: var(--t-ic-bg); color: var(--t-ic); }
+.tiles .tile .t-link { color: var(--t-link); }
+@media (max-width: 639px) { .tiles .tile:nth-child(odd) { --t-bg: var(--color-navy); --t-border: var(--color-navy); --t-title: #fff; --t-text: #cbd5e1; --t-ic-bg: rgba(255,255,255,.1); --t-ic: #fff; --t-link: #fff; } }
+@media (min-width: 640px) and (max-width: 1023px) { .tiles .tile:nth-child(4n+1), .tiles .tile:nth-child(4n) { --t-bg: var(--color-navy); --t-border: var(--color-navy); --t-title: #fff; --t-text: #cbd5e1; --t-ic-bg: rgba(255,255,255,.1); --t-ic: #fff; --t-link: #fff; } }
+@media (min-width: 1024px) { .tiles .tile:nth-child(8n+1), .tiles .tile:nth-child(8n+3), .tiles .tile:nth-child(8n+6), .tiles .tile:nth-child(8n+8) { --t-bg: var(--color-navy); --t-border: var(--color-navy); --t-title: #fff; --t-text: #cbd5e1; --t-ic-bg: rgba(255,255,255,.1); --t-ic: #fff; --t-link: #fff; } }

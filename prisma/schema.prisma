@@ -114,12 +114,31 @@ model Step {
   sort  Int    @default(0)
 }
 
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Review {
-  id      String  @id @default(cuid())
-  author  String
-  text    String
-  visible Boolean @default(false)
-  sort    Int     @default(0)
+  id          String       @id @default(cuid())
+  author      String
+  text        String
+  rating      Int?
+  serviceKey  String?
+  /// телефон или e-mail для проверки отзыва; на сайте не показывается
+  contact     String?
+  status      ReviewStatus @default(PENDING)
+  /// site — оставлен посетителем, admin — добавлен администратором
+  source      String       @default("site")
+  consentAt   DateTime?
+  /// ответ компании (показывается под отзывом)
+  reply       String?
+  createdAt   DateTime     @default(now())
+  publishedAt DateTime?
+  sort        Int          @default(0)
+
+  @@index([status, createdAt])
 }
 
 model Photo {

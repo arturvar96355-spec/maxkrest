@@ -7,7 +7,9 @@ import { Reveal } from "@/components/Reveal";
 import { TrackedLink } from "@/components/TrackedLink";
 import { CallbackForm } from "@/components/CallbackForm";
 import { ServiceIcon } from "@/components/ServiceIcon";
-import { SpotlightCard } from "@/components/SpotlightCard";
+import { ServicesSection, parseServiceVariant } from "@/components/ServicesSection";
+import { ReviewCard } from "@/components/ReviewCard";
+import { getPublishedReviews } from "@/lib/reviews";
 import { Timeline } from "@/components/Timeline";
 import { SnowField } from "@/components/SnowField";
 import { HeroVideo } from "@/components/HeroVideo";
@@ -59,14 +61,16 @@ function Marquee() {
   );
 }
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ uslugi?: string }> }) {
+  const variant = parseServiceVariant((await searchParams).uslugi);
   // постер первого экрана — главный элемент загрузки: просим браузер взять его первым
   preload("/hero/hero-poster-1080.webp", { as: "image", fetchPriority: "high", imageSrcSet: "/hero/hero-poster-640.webp 640w, /hero/hero-poster-1080.webp 1080w", imageSizes: "100vw" });
-  const [s, services, { advantages, steps, photos, reviews }] = await Promise.all([getSettings(), getServices(), getHomeBlocks()]);
+  const [s, services, { advantages, steps, photos }, { reviews, demo: reviewsDemo }] = await Promise.all([getSettings(), getServices(), getHomeBlocks(), getPublishedReviews(3)]);
+  let n = 1; // «01» — блок услуг
+  const num = () => String(++n).padStart(2, "0");
   const ld = { "@context": "https://schema.org", "@type": "LocalBusiness", name: s.companyName, telephone: s.phone, areaServed: s.region, url: siteUrl() };
   const words = s.heroTitle.split(/\s+/);
   const accentFrom = words.findIndex((w) => /^Москв/i.test(w)); // «…в Москве и Московской области» — акцентным цветом
-  const bento = services.length === 7;
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
@@ -129,42 +133,22 @@ export default async function Home() {
 
       <Marquee />
 
-      {/* ===== Услуги (bento) ===== */}
-      <section className="container-x mt-20">
-        <Section n="01" label="Что мы делаем" title="Услуги" lead="Выберите направление: на странице услуги — перечень работ и кнопка заявки.">
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:auto-rows-fr lg:grid-cols-4">
-            {services.map((sv, i) => {
-              const big = bento && i === 0;
-              const wide = bento && i >= 5;
-              return (
-                <SpotlightCard key={sv.id} href={`/uslugi/${sv.slug}`} className={`group flex flex-col rounded-2xl border p-6 transition duration-300 hover:-translate-y-1 hover:border-ice hover:shadow-xl ${big ? "border-navy bg-navy text-white lg:col-span-2 lg:row-span-2 lg:p-8" : "border-slate-200 bg-white"} ${wide ? "lg:col-span-2" : ""}`}>
-                  <span className={`grid place-items-center rounded-xl transition-colors ${big ? "h-14 w-14 bg-white/10 text-white" : "h-11 w-11 bg-ice-50 text-navy group-hover:bg-navy group-hover:text-white"}`}>
-                    <ServiceIcon name={sv.formKey} className={big ? "h-7 w-7" : "h-6 w-6"} />
-                  </span>
-                  <h3 className={`mt-4 font-semibold ${big ? "text-2xl lg:text-3xl" : "text-navy"}`}>{sv.title}</h3>
-                  <p className={`mt-2 flex-1 ${big ? "max-w-md text-slate-200" : "text-sm text-slate-600"}`}>{sv.short}</p>
-                  <span className={`mt-5 inline-flex items-center gap-1 text-sm font-semibold transition-transform group-hover:translate-x-1 ${big ? "text-white" : "text-ice"}`}>Подробнее <span aria-hidden>→</span></span>
-                </SpotlightCard>
-              );
-            })}
-          </div>
-        </Section>
-      </section>
+      <ServicesSection services={services} variant={variant} />
 
-      {/* ===== Преимущества (тёмная секция) ===== */}
-      <section className="mt-24 bg-navy-900 py-20 text-white">
+      {/* ===== Преимущества (тёмная секция; при тёмном блоке услуг — светлая) ===== */}
+      <section className={`mt-24 py-20 ${variant === "b" ? "bg-ice-50 text-navy" : "bg-navy-900 text-white"}`}>
         <div className="container-x">
           <Reveal stagger>
             <div data-reveal>
-              <p className="mb-3 flex items-center gap-3 text-sm font-semibold uppercase tracking-[.14em] text-ice"><span>02</span><span aria-hidden className="h-px w-10 bg-ice/60" />Почему мы</p>
+              <p className="mb-3 flex items-center gap-3 text-sm font-semibold uppercase tracking-[.14em] text-ice"><span>{num()}</span><span aria-hidden className="h-px w-10 bg-ice/60" />Почему мы</p>
               <h2 className="max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">Преимущества</h2>
             </div>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {advantages.map((a, i) => (
-                <div data-reveal key={a.id} className="rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:bg-white/10">
-                  <span className="text-4xl font-bold text-ice/80 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                <div data-reveal key={a.id} className={`rounded-2xl border p-6 transition-colors ${variant === "b" ? "border-slate-200 bg-white hover:border-ice/60" : "border-white/10 bg-white/5 hover:bg-white/10"}`}>
+                  <span className={`text-4xl font-bold tabular-nums ${variant === "b" ? "text-ice" : "text-ice/80"}`}>{String(i + 1).padStart(2, "0")}</span>
                   <h3 className="mt-3 text-lg font-semibold">{a.title}</h3>
-                  <p className="mt-2 text-sm text-slate-300">{a.text}</p>
+                  <p className={`mt-2 text-sm ${variant === "b" ? "text-slate-600" : "text-slate-300"}`}>{a.text}</p>
                 </div>
               ))}
             </div>
@@ -174,7 +158,7 @@ export default async function Home() {
 
       {/* ===== Как мы работаем ===== */}
       <section id="how" className="container-x mt-24 scroll-mt-20">
-        <Section n="03" label="От заявки до работ" title="Как мы работаем">
+        <Section n={num()} label="От заявки до работ" title="Как мы работаем">
           <Timeline className="relative mt-10">
             <div aria-hidden className="absolute left-[1.05rem] top-4 hidden h-[calc(100%-2rem)] w-px bg-slate-200 max-md:block" />
             <div aria-hidden data-line-v style={{ transform: "scaleY(0)" }} className="absolute left-[1.05rem] top-4 h-[calc(100%-2rem)] w-px origin-top bg-ice md:hidden" />
@@ -197,7 +181,7 @@ export default async function Home() {
 
       {photos.length > 0 && (
         <section className="container-x mt-24">
-          <Section n="04" label="Результат" title="Выполненные работы">
+          <Section n={num()} label="Результат" title="Выполненные работы">
             <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3">
               {photos.map((p) => (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -210,7 +194,7 @@ export default async function Home() {
 
       {/* ===== Объекты ===== */}
       <section className="container-x mt-24">
-        <Section n={photos.length > 0 ? "05" : "04"} label="Для кого" title="С какими объектами работаем">
+        <Section n={num()} label="Для кого" title="С какими объектами работаем">
           <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {objectTypes.map(([icon, label]) => (
               <li data-reveal key={label} className="spot flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-5 py-4 transition hover:border-ice">
@@ -222,19 +206,17 @@ export default async function Home() {
         </Section>
       </section>
 
-      {reviews.length > 0 && (
-        <section className="container-x mt-24">
-          <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">Отзывы</h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {reviews.map((r) => (
-              <blockquote key={r.id} className="rounded-2xl border border-slate-200 p-6">
-                <p>{r.text}</p>
-                <footer className="mt-3 text-sm font-semibold text-navy">{r.author}</footer>
-              </blockquote>
-            ))}
+      {/* ===== Отзывы ===== */}
+      <section className="container-x mt-24">
+        <Section n={num()} label="Мнения клиентов" title="Отзывы" lead={reviews.length === 0 ? "Отзывов пока нет — будем рады вашему." : undefined}>
+          {reviewsDemo && <p data-reveal className="mt-6 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">Макет оформления: примерные тексты, не реальные отзывы. В рабочем режиме показываются только отзывы, прошедшие проверку менеджером.</p>}
+          {reviews.length > 0 && <div className="mt-8 grid gap-4 md:grid-cols-3">{reviews.map((r) => <ReviewCard key={r.id} r={r} />)}</div>}
+          <div data-reveal className="mt-8 flex flex-wrap gap-3">
+            {reviews.length > 0 && <Link href="/otzyvy" className="btn btn-secondary">Все отзывы</Link>}
+            <Link href="/otzyvy#form" className="btn btn-primary">Оставить отзыв</Link>
           </div>
-        </section>
-      )}
+        </Section>
+      </section>
 
       {/* ===== Призыв ===== */}
       <section className="container-x mt-24">
@@ -250,7 +232,7 @@ export default async function Home() {
 
       {/* ===== Контакты ===== */}
       <section className="container-x mt-24">
-        <Section n={reviews.length > 0 ? "06" : photos.length > 0 ? "06" : "05"} label="Как связаться" title="Контакты и география работы">
+        <Section n={num()} label="Как связаться" title="Контакты и география работы">
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             <div data-reveal className="rounded-2xl border border-slate-200 p-6">
               <p className="text-sm text-slate-500">{s.extraPhones.length ? "Телефоны" : "Телефон"}</p>

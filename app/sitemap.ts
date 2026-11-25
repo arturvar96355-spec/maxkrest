@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
   const services = await getServices();
   return [
-    ...["", "/uslugi", "/kontakty", "/zayavka", "/politika-konfidencialnosti", "/soglasie"].map((p) => ({ url: base + p })),
+    ...["", "/uslugi", "/kontakty", "/otzyvy", "/zayavka", "/politika-konfidencialnosti", "/soglasie"].map((p) => ({ url: base + p })),
     ...services.map((s) => ({ url: `${base}/uslugi/${s.slug}` })),
   ];
 }

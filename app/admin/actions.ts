@@ -7,7 +7,7 @@ import { login, logout, requireAdmin } from "@/lib/auth";
 import { saveImage } from "@/lib/uploads";
 import { notifyLead } from "@/lib/telegram";
 import { clientIp } from "@/lib/rateLimit";
-import type { LeadStatus } from "@prisma/client";
+import type { LeadStatus, ReviewStatus } from "@prisma/client";
 
 const s = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 const opt = (fd: FormData, k: string) => s(fd, k) || null;
@@ -130,7 +130,7 @@ export async function deleteService(fd: FormData) {
   revalidatePath("/admin/uslugi");
 }
 
-type Block = "advantage" | "step" | "review";
+type Block = "advantage" | "step";
 export async function saveBlock(fd: FormData) {
   await requireAdmin();
   const kind = s(fd, "kind") as Block;
@@ -143,9 +143,6 @@ export async function saveBlock(fd: FormData) {
   } else if (kind === "step") {
     const data = { title: s(fd, "title"), text: s(fd, "text"), sort };
     id ? await db.step.update({ where: { id }, data }) : await db.step.create({ data });
-  } else if (kind === "review") {
-    const data = { author: s(fd, "title"), text: s(fd, "text"), sort, visible };
-    id ? await db.review.update({ where: { id }, data }) : await db.review.create({ data });
   }
   revalidatePath("/", "layout");
   revalidatePath("/admin/bloki");
@@ -157,7 +154,6 @@ export async function deleteBlock(fd: FormData) {
   const kind = s(fd, "kind") as Block | "photo";
   if (kind === "advantage") await db.advantage.delete({ where: { id } });
   if (kind === "step") await db.step.delete({ where: { id } });
-  if (kind === "review") await db.review.delete({ where: { id } });
   if (kind === "photo") await db.photo.delete({ where: { id } });
   revalidatePath("/", "layout");
   revalidatePath("/admin/bloki");
@@ -172,4 +168,51 @@ export async function uploadPhoto(fd: FormData) {
   }
   revalidatePath("/", "layout");
   revalidatePath("/admin/bloki");
+}
+
+// ---------- Отзывы ----------
+const REVIEW_STATUSES = ["PENDING", "APPROVED", "REJECTED"];
+
+/** Смена статуса (опубликовать / отклонить / вернуть на проверку) вместе с правками текста и ответа. */
+export async function saveReview(fd: FormData) {
+  await requireAdmin();
+  const id = s(fd, "id");
+  const status = s(fd, "status");
+  if (!REVIEW_STATUSES.includes(status)) return;
+  const rating = Number(s(fd, "rating"));
+  const prev = await db.review.findUnique({ where: { id }, select: { status: true, publishedAt: true } });
+  if (!prev) return;
+  await db.review.update({
+    where: { id },
+    data: {
+      author: s(fd, "author") || "Клиент",
+      text: s(fd, "text"),
+      rating: rating >= 1 && rating <= 5 ? rating : null,
+      reply: opt(fd, "reply"),
+      status: status as ReviewStatus,
+      publishedAt: status === "APPROVED" ? prev.publishedAt ?? new Date() : null,
+    },
+  });
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/otzyvy");
+}
+
+export async function createReview(fd: FormData) {
+  await requireAdmin();
+  const text = s(fd, "text");
+  if (!text) return;
+  const rating = Number(s(fd, "rating"));
+  await db.review.create({
+    data: { author: s(fd, "author") || "Клиент", text, rating: rating >= 1 && rating <= 5 ? rating : null, reply: opt(fd, "reply"), status: "APPROVED", source: "admin", publishedAt: new Date() },
+  });
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/otzyvy");
+}
+
+export async function deleteReview(fd: FormData) {
+  await requireAdmin();
+  if (s(fd, "confirm") !== "yes") return;
+  await db.review.delete({ where: { id: s(fd, "id") } });
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/otzyvy");
 }

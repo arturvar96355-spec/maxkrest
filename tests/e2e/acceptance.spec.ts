@@ -168,3 +168,64 @@ test("в подвале и мобильном меню есть ссылки н�
   await page.getByRole("button", { name: "Открыть меню" }).click();
   await expect(page.locator("#mobile-menu").getByRole("link", { name: "Вывоз снега" })).toBeVisible();
 });
+
+test("отзыв: попадает на модерацию, виден на сайте только после публикации в админке", async ({ page, browser, baseURL }) => {
+  const author = `Тест${Date.now() % 100000}`;
+  await page.goto("/otzyvy");
+  await page.getByLabel("5 из 5").check({ force: true });
+  await page.fill("#rv-author", author);
+  await page.fill("#rv-text", "Проверочный отзыв: работу выполнили аккуратно и в срок, всё устроило.");
+  await page.getByRole("checkbox", { name: /согласие/i }).check();
+  await page.waitForTimeout(4300); // антиспам: минимальное время заполнения
+  await page.getByRole("button", { name: "Отправить отзыв" }).click();
+  await expect(page.getByRole("status")).toContainText("Спасибо за отзыв");
+
+  // до публикации посетитель отзыв не видит
+  await page.goto("/otzyvy");
+  await expect(page.getByText(author)).toHaveCount(0);
+
+  // менеджер публикует
+  const adminCtx = await browser.newContext({ baseURL });
+  const ap = await adminCtx.newPage();
+  await ap.goto("/admin/login");
+  await ap.fill("#email", ADMIN_EMAIL);
+  await ap.fill("#password", ADMIN_PASSWORD);
+  await ap.getByRole("button", { name: "Войти" }).click();
+  await ap.waitForURL("**/admin/zayavki");
+  await ap.goto("/admin/otzyvy");
+  const card = ap.locator("div.rounded-xl", { has: ap.locator(`input[name=author][value="${author}"]`) }).first();
+  await card.getByRole("button", { name: "Опубликовать" }).click();
+  await ap.waitForTimeout(800);
+
+  // теперь виден всем
+  await page.goto("/otzyvy");
+  await expect(page.getByText(author)).toBeVisible();
+  await page.goto("/");
+  await expect(page.getByText(author).first()).toBeVisible();
+
+  // убираем за собой
+  await ap.goto("/admin/otzyvy?status=APPROVED");
+  const del = ap.locator("div.rounded-xl", { has: ap.locator(`input[name=author][value="${author}"]`) }).first();
+  await del.getByRole("checkbox", { name: /Подтверждаю удаление/ }).check();
+  await del.getByRole("button", { name: "Удалить" }).click();
+  await ap.waitForTimeout(500);
+  await adminCtx.close();
+});
+
+test("отзыв: без согласия отправить нельзя", async ({ page }) => {
+  await page.goto("/otzyvy");
+  await page.getByLabel("4 из 5").check({ force: true });
+  await page.fill("#rv-author", "Бот");
+  await page.fill("#rv-text", "Автоматический текст отзыва, который должен быть отклонён антиспамом.");
+  await page.getByRole("button", { name: "Отправить отзыв" }).click();
+  await expect(page.getByText(/Необходимо согласие/)).toBeVisible();
+});
+
+test("в «Услугах» на главной нет единственной выделенной плитки: синие и белые чередуются", async ({ page }) => {
+  await page.goto("/");
+  const tones = await page.$$eval(".tiles .tile", (els) => els.map((e) => getComputedStyle(e).backgroundColor));
+  expect(tones.length).toBeGreaterThanOrEqual(8);
+  const dark = tones.filter((c) => c !== "rgb(255, 255, 255)").length;
+  expect(dark).toBeGreaterThanOrEqual(3);          // не одна синяя
+  expect(dark).toBeLessThanOrEqual(tones.length - 3); // и не все
+});

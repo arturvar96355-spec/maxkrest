@@ -44,6 +44,7 @@ export function Header({ s, services = [] }: { s: SiteSettings; services?: NavSe
             )}
           </div>
           <Link href="/#how" className="nav-link">Как мы работаем</Link>
+          <Link href="/otzyvy" className="nav-link">Отзывы</Link>
           <Link href="/kontakty" className="nav-link">Контакты</Link>
         </nav>
         <div className="flex items-center gap-3">
@@ -81,6 +82,7 @@ export function Footer({ s, services = [] }: { s: SiteSettings; services?: NavSe
         <div className="text-sm">
           <p className="mb-2 font-semibold text-white">Разделы</p>
           <Link href="/uslugi" className="block py-1">Услуги</Link>
+          <Link href="/otzyvy" className="block py-1">Отзывы</Link>
           <Link href="/zayavka" className="block py-1">Оставить заявку</Link>
           <Link href="/politika-konfidencialnosti" className="block py-1">Политика конфиденциальности</Link>
           <Link href="/soglasie" className="block py-1">Согласие на обработку данных</Link>

@@ -9,7 +9,7 @@ function BlockForm({ kind, item, showVisible }: { kind: string; item?: Item; sho
       <form action={saveBlock} className="grid gap-2">
         <input type="hidden" name="kind" value={kind} />
         {item?.id && <input type="hidden" name="id" value={item.id} />}
-        <input name="title" required placeholder={kind === "review" ? "Автор" : "Заголовок"} defaultValue={item?.title} className="field" />
+        <input name="title" required placeholder="Заголовок" defaultValue={item?.title} className="field" />
         <textarea name="text" required rows={2} placeholder="Текст" defaultValue={item?.text} className="field" />
         <div className="flex flex-wrap items-center gap-4">
           <label className="flex items-center gap-2 text-sm">Порядок <input name="sort" type="number" defaultValue={item?.sort ?? 0} className="field !w-24" /></label>
@@ -23,21 +23,16 @@ function BlockForm({ kind, item, showVisible }: { kind: string; item?: Item; sho
 }
 
 export default async function Blocks() {
-  const [adv, steps, reviews, photos] = await Promise.all([
+  const [adv, steps, photos] = await Promise.all([
     db.advantage.findMany({ orderBy: { sort: "asc" } }),
     db.step.findMany({ orderBy: { sort: "asc" } }),
-    db.review.findMany({ orderBy: { sort: "asc" } }),
     db.photo.findMany({ orderBy: { sort: "asc" } }),
   ]);
   return (
     <div className="max-w-3xl space-y-12">
       <section><h2 className="mb-4 text-xl font-bold text-navy">Преимущества</h2><div className="space-y-3">{adv.map((a) => <BlockForm key={a.id} kind="advantage" showVisible item={a} />)}<BlockForm kind="advantage" showVisible /></div></section>
       <section><h2 className="mb-4 text-xl font-bold text-navy">Как мы работаем (этапы)</h2><div className="space-y-3">{steps.map((a) => <BlockForm key={a.id} kind="step" item={a} />)}<BlockForm kind="step" /></div></section>
-      <section>
-        <h2 className="mb-1 text-xl font-bold text-navy">Отзывы</h2>
-        <p className="mb-4 text-sm text-slate-500">Публикуйте только подтверждённые отзывы. Отмеченные «Показывать» отзывы выводятся на главной.</p>
-        <div className="space-y-3">{reviews.map((a) => <BlockForm key={a.id} kind="review" showVisible item={{ ...a, title: a.author }} />)}<BlockForm kind="review" showVisible /></div>
-      </section>
+      <section><h2 className="mb-2 text-xl font-bold text-navy">Отзывы</h2><p className="text-slate-600">Модерация и добавление отзывов — в разделе <a href="/admin/otzyvy" className="underline">«Отзывы»</a>.</p></section>
       <section>
         <h2 className="mb-4 text-xl font-bold text-navy">Фотографии выполненных работ</h2>
         <form action={uploadPhoto} className="grid gap-2 rounded-lg border border-slate-200 p-4">

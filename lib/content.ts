@@ -30,14 +30,12 @@ export async function getHomeBlocks() {
       advantages: defaults.advantages.map((a, i) => ({ id: String(i), ...a })),
       steps: defaults.steps.map((a, i) => ({ id: String(i), ...a })),
       photos: [] as { id: string; storedAs: string; caption: string | null }[],
-      reviews: [] as { id: string; author: string; text: string }[],
     };
   }
-  const [advantages, steps, photos, reviews] = await Promise.all([
+  const [advantages, steps, photos] = await Promise.all([
     db.advantage.findMany({ where: { visible: true }, orderBy: { sort: "asc" } }),
     db.step.findMany({ orderBy: { sort: "asc" } }),
     db.photo.findMany({ orderBy: { sort: "asc" }, take: 6 }),
-    db.review.findMany({ where: { visible: true }, orderBy: { sort: "asc" }, take: 6 }),
   ]);
-  return { advantages, steps, photos, reviews };
+  return { advantages, steps, photos };
 }
